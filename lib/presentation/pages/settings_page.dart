@@ -4,6 +4,7 @@ import 'package:maternal_infant_care/core/theme/app_theme.dart';
 import 'package:maternal_infant_care/presentation/viewmodels/auth_provider.dart';
 import 'package:maternal_infant_care/presentation/viewmodels/user_meta_provider.dart';
 import 'package:maternal_infant_care/presentation/viewmodels/user_provider.dart';
+import 'package:maternal_infant_care/core/utils/notification_service.dart';
 import 'package:intl/intl.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
@@ -173,6 +174,28 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 
+  Future<void> _toggleNotification(String key, bool currentValue) async {
+    setState(() => _isLoading = true);
+    try {
+      await ref.read(authServiceProvider).updateUserMetadata({
+        key: !currentValue,
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Notification settings updated')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error updating notifications: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
@@ -227,14 +250,30 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           const SizedBox(height: 32),
           _buildSectionHeader('Notifications'),
           const SizedBox(height: 16),
-          _buildNotificationToggle('Daily Tips', true),
+          _buildNotificationToggle(
+            'Daily Tips', 
+            userMeta.tipsEnabled, 
+            (val) => _toggleNotification('tips_enabled', userMeta.tipsEnabled),
+          ),
           const SizedBox(height: 12),
-          _buildNotificationToggle('Health Checkups', true),
+          _buildNotificationToggle(
+            'Health Checkups', 
+            userMeta.alertsEnabled, 
+            (val) => _toggleNotification('alerts_enabled', userMeta.alertsEnabled),
+          ),
+          const SizedBox(height: 12),
+          _buildNotificationToggle(
+            'Important Alerts', 
+            userMeta.remindersEnabled, 
+            (val) => _toggleNotification('reminders_enabled', userMeta.remindersEnabled),
+          ),
           const SizedBox(height: 24),
           OutlinedButton.icon(
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Test notification sent!')),
+              NotificationService.showInstantNotification(
+                id: 999,
+                title: 'Test Notification',
+                body: 'This is a test notification from your settings.',
               );
             },
             icon: const Icon(Icons.notification_important_outlined),
@@ -255,11 +294,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     );
   }
 
-  Widget _buildNotificationToggle(String title, bool value) {
+  Widget _buildNotificationToggle(String title, bool value, ValueChanged<bool> onChanged) {
     return SwitchListTile(
       title: Text(title),
       value: value,
-      onChanged: (val) {},
+      onChanged: _isLoading ? null : onChanged,
       dense: true,
       tileColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
