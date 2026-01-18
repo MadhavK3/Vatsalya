@@ -26,6 +26,7 @@ import 'package:maternal_infant_care/presentation/pages/careflow_ai_page.dart';
 
 import 'package:maternal_infant_care/presentation/pages/profile_page.dart';
 import 'package:maternal_infant_care/presentation/pages/pregnancy_setup_page.dart';
+import 'package:maternal_infant_care/presentation/viewmodels/user_meta_provider.dart';
 import 'package:maternal_infant_care/presentation/pages/weekly_stats_page.dart';
 import 'package:maternal_infant_care/presentation/pages/daily_summary_page.dart';
 class DashboardPage extends ConsumerStatefulWidget {
@@ -42,6 +43,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     final feedingRepo = ref.watch(feedingRepositoryProvider);
     final sleepRepo = ref.watch(sleepRepositoryProvider);
     final diaperRepo = ref.watch(diaperRepositoryProvider);
+    final userMeta = ref.watch(userMetaProvider);
+    final username = userMeta.username;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Vatsalya Hub'),
@@ -69,6 +73,22 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              if (username != null && username.isNotEmpty) ...[
+                Text(
+                  'Hi, $username',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                ),
+                Text(
+                  'How is your journey today?',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+                const SizedBox(height: 24),
+              ],
               _buildGreetingCard(context, pregnancyRepo),
               const SizedBox(height: 32),
               
@@ -117,6 +137,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
   Widget _buildGreetingCard(BuildContext context, AsyncValue pregnancyRepo) {
     final profileType = ref.watch(userProfileProvider);
+    final userMeta = ref.watch(userMetaProvider);
+    final username = userMeta.username;
 
     if (profileType == UserProfileType.toddlerParent) {
       return Card(
@@ -129,10 +151,12 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                 children: [
                   Icon(Icons.child_care, color: Theme.of(context).colorScheme.primary, size: 28),
                   const SizedBox(width: 12),
-                  Text(
-                    'Welcome Back! ❤️',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Text(
+                      username != null && username.isNotEmpty ? 'Hi, $username! ❤️' : 'Welcome Back! ❤️',
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -182,9 +206,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Pregnancy Journey',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                  Text(
+                    username != null && username.isNotEmpty ? 'Hi, $username' : 'Pregnancy Journey',
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                   Text(
                     'Month ${pregnancy.currentMonth}',
@@ -192,6 +216,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   ),
                 ],
               ),
+              if (username != null && username.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                const Text(
+                  'Your journey to motherhood',
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                ),
+              ],
               const SizedBox(height: 20),
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
@@ -217,6 +248,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
   }
 
   Widget _buildNoPregnancyCard(BuildContext context) {
+    final userMeta = ref.watch(userMetaProvider);
+    final username = userMeta.username;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -229,7 +263,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
         children: [
           const Icon(Icons.favorite, color: Colors.red, size: 40),
           const SizedBox(height: 12),
-          const Text('Welcome to Vatsalya', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          Text(
+            username != null && username.isNotEmpty ? 'Hi, $username!' : 'Welcome to Vatsalya', 
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)
+          ),
           const Text('Track your journey from day one.', style: TextStyle(color: Colors.grey)),
           const SizedBox(height: 16),
           ElevatedButton(

@@ -3,159 +3,138 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz_data;
 
 class NotificationService {
-  static final FlutterLocalNotificationsPlugin _notifications =
-      FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin _notifications = FlutterLocalNotificationsPlugin();
 
   static Future<void> initialize() async {
+    // 1. Initialize Timezones
+    tz_data.initializeTimeZones();
     try {
-      tz_data.initializeTimeZones();
-      // Most reliable way to get a valid timezone location
-      const String timeZoneName = 'Asia/Kolkata'; // Fallback to a known valid one
-      try {
-        tz.setLocalLocation(tz.getLocation(timeZoneName));
-      } catch (_) {
-        tz.setLocalLocation(tz.getLocation('UTC'));
-      }
+      tz.setLocalLocation(tz.getLocation('Asia/Kolkata'));
     } catch (e) {
-      print('Notification Service: Timezone initialization error: $e');
+      tz.setLocalLocation(tz.getLocation('UTC'));
     }
-
-    // Use the local icon we just created
-    const androidSettings = AndroidInitializationSettings('notification_icon');
-    const iosSettings = DarwinInitializationSettings();
+    
+    // 2. Settings - Using ic_launcher as it's the most reliable default icon
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const iosSettings = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+    
     const initSettings = InitializationSettings(
       android: androidSettings,
       iOS: iosSettings,
     );
 
-    try {
-      final initialized = await _notifications.initialize(
-        initSettings,
-        onDidReceiveNotificationResponse: _onNotificationTapped,
-      );
-      
-      print('Notification Service: Initialization result = $initialized');
-      
-      if (initialized == false) {
-        print('Notification Service: Initialization failed (returned false)');
-        return;
-      }
-    } catch (e) {
-      print('Notification Service: Initialization Exception: $e');
-      return;
+    // 3. Initialize Plugin
+    await _notifications.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: (details) {
+        print('Notification tapped: ${details.payload}');
+      },
+    );
+
+    // 4. Create Channel (Android Only)
+    const androidChannel = AndroidNotificationChannel(
+      'high_importance_channel', // id
+      'Urgent Alerts', // name
+      description: 'This channel is used for important notifications.',
+      importance: Importance.max,
+      playSound: true,
+      enableVibration: true,
+    );
+
+    final androidPlugin = _notifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+    if (androidPlugin != null) {
+      await androidPlugin.createNotificationChannel(androidChannel);
     }
-
-    try {
-      await _notifications
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
-          ?.createNotificationChannel(const AndroidNotificationChannel(
-        'vatsalya_tips',
-        'Daily Tips',
-        description: 'Personalized health and parenting tips',
-        importance: Importance.low,
-      ));
-
-      await _notifications
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
-          ?.createNotificationChannel(const AndroidNotificationChannel(
-        'vatsalya_alerts',
-        'Vatsalya Alerts',
-        description: 'Vital reminders for you and your baby',
-        importance: Importance.max,
-        playSound: true,
-        enableVibration: true,
-      ));
-
-      // Request permissions for Android 13+
-      print('Notification Service: Requesting permissions...');
-      final granted = await _notifications
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
-          ?.requestNotificationsPermission();
-      
-      print('Notification Service: Permission granted = $granted');
-    } catch (e) {
-      print('Notification Service: Channel/Permission error = $e');
-    }
+    
+    print('Notification Service: Re-initialized Successfully');
   }
 
-  static void _onNotificationTapped(NotificationResponse response) {}
+  static Future<bool> requestPermission() async {
+    final androidPlugin = _notifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+    if (androidPlugin != null) {
+      final granted = await androidPlugin.requestNotificationsPermission();
+      return granted ?? false;
+    }
+    return true;
+  }
 
-  static Future<void> showNotification({
+  // Instant Notification
+  static Future<void> showInstantNotification({
     required int id,
     required String title,
     required String body,
-    String channelId = 'vatsalya_alerts',
+    String? channelId,
   }) async {
     final androidDetails = AndroidNotificationDetails(
-      channelId,
-      channelId == 'vatsalya_tips' ? 'Daily Tips' : 'Vatsalya Alerts',
-      channelDescription: channelId == 'vatsalya_tips' 
-          ? 'Personalized health and parenting tips' 
-          : 'Vital reminders for you and your baby',
-      importance: channelId == 'vatsalya_tips' ? Importance.low : Importance.max,
-      priority: channelId == 'vatsalya_tips' ? Priority.low : Priority.high,
-      icon: 'notification_icon',
-
+      channelId ?? 'high_importance_channel',
+      'Urgent Alerts',
+      channelDescription: 'Important alerts',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: true,
+      icon: '@mipmap/ic_launcher',
     );
 
     const iosDetails = DarwinNotificationDetails();
-    final details = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
+    final details = NotificationDetails(android: androidDetails, iOS: iosDetails);
 
     await _notifications.show(id, title, body, details);
   }
 
+  // Scheduled Notification
   static Future<void> scheduleNotification({
     required int id,
     required String title,
     required String body,
     required DateTime scheduledDate,
-    String channelId = 'vatsalya_alerts',
+    String? channelId,
   }) async {
-    final androidDetails = AndroidNotificationDetails(
-      channelId,
-      channelId == 'vatsalya_tips' ? 'Daily Tips' : 'Vatsalya Alerts',
-      channelDescription: channelId == 'vatsalya_tips' 
-          ? 'Personalized health and parenting tips' 
-          : 'Vital reminders for you and your baby',
-      importance: channelId == 'vatsalya_tips' ? Importance.low : Importance.max,
-      priority: channelId == 'vatsalya_tips' ? Priority.low : Priority.high,
-      icon: 'notification_icon',
-
-    );
-
-    const iosDetails = DarwinNotificationDetails();
-    final details = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
+    if (scheduledDate.isBefore(DateTime.now())) {
+      scheduledDate = DateTime.now().add(const Duration(seconds: 5));
+    }
 
     await _notifications.zonedSchedule(
       id,
       title,
       body,
       tz.TZDateTime.from(scheduledDate, tz.local),
-      details,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          channelId ?? 'high_importance_channel',
+          'Urgent Alerts',
+          importance: Importance.max,
+          priority: Priority.high,
+          icon: '@mipmap/ic_launcher',
+        ),
+        iOS: const DarwinNotificationDetails(),
+      ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
     );
+  }
+
+  static Future<void> showNotification({
+    required int id,
+    required String title,
+    required String body,
+    String? channelId,
+  }) async {
+    await showInstantNotification(id: id, title: title, body: body, channelId: channelId);
+  }
+
+  static Future<List<PendingNotificationRequest>> getPendingNotifications() async {
+    return await _notifications.pendingNotificationRequests();
   }
 
   static Future<void> cancelNotification(int id) async {
     await _notifications.cancel(id);
   }
 
-  static Future<void> cancelAllNotifications() async {
+  static Future<void> cancelAll() async {
     await _notifications.cancelAll();
-  }
-
-  static Future<List<PendingNotificationRequest>> getPendingNotifications() async {
-    return await _notifications.pendingNotificationRequests();
   }
 }

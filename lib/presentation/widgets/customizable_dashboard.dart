@@ -49,6 +49,7 @@ class _CustomizableDashboardState extends ConsumerState<CustomizableDashboard> {
                   },
                   icon: const Icon(Icons.check),
                   label: const Text('Done'),
+                  heroTag: 'fab_dashboard_edit',
                 )
               : null,
           body: ReorderableListView(

@@ -29,15 +29,37 @@ class GeminiService {
   }
 
   Future<String> sendMessage(String message) async {
+    if (Env.geminiApiKey.isEmpty) {
+      return 'Error: Gemini API key is missing. Please check your .env file.';
+    }
+
     try {
       _chatSession ??= _model.startChat();
       final response = await _chatSession!.sendMessage(Content.text(message));
-      return response.text ?? 'No response from AI.';
+      final text = response.text;
+      
+      if (text == null || text.isEmpty) {
+        return 'I apologize, but I couldn\'t generate a response. Please try rephrasing your question.';
+      }
+      
+      return text;
     } catch (e) {
       print('Gemini sendMessage error: $e');
-      // Reset session on error in case it's corrupted
+      final errorStr = e.toString().toLowerCase();
+      
+      if (errorStr.contains('429') || errorStr.contains('quota')) {
+        return 'Rate limit exceeded. Please wait a moment before sending another message.';
+      } else if (errorStr.contains('403') || errorStr.contains('401')) {
+        return 'API key error. Please verify your Gemini API key in the .env file.';
+      } else if (errorStr.contains('finish_reason: safety')) {
+        return 'I cannot answer this due to safety guidelines. Please ask something else related to maternal or infant care.';
+      } else if (errorStr.contains('network') || errorStr.contains('socket')) {
+        return 'Network error. Please check your internet connection and try again.';
+      }
+      
+      // Reset session on other errors in case it's corrupted
       _chatSession = null;
-      return 'Sorry, I encountered an error. Please try again.';
+      return 'Sorry, I encountered an error: ${e.toString().split(':').last.trim()}';
     }
   }
 

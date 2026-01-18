@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:maternal_infant_care/domain/providers/ai_provider.dart';
-import 'package:maternal_infant_care/domain/providers/user_provider.dart';
-import 'package:maternal_infant_care/data/services/gemini_service.dart';
+import 'package:maternal_infant_care/presentation/viewmodels/ai_provider.dart';
+import 'package:maternal_infant_care/presentation/viewmodels/user_provider.dart';
+import 'package:maternal_infant_care/domain/services/gemini_service.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 

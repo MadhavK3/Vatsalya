@@ -5,8 +5,9 @@ import 'package:maternal_infant_care/presentation/viewmodels/user_provider.dart'
 class UserMeta {
   final UserProfileType? role;
   final DateTime? startDate;
+  final String? username;
 
-  UserMeta({this.role, this.startDate});
+  UserMeta({this.role, this.startDate, this.username});
 
   factory UserMeta.fromMetadata(Map<String, dynamic>? metadata) {
     if (metadata == null) return UserMeta();
@@ -18,10 +19,12 @@ class UserMeta {
     
     final startDateStr = metadata['start_date'] as String?;
     final startDate = startDateStr != null ? DateTime.tryParse(startDateStr) : null;
+    final username = metadata['username'] as String?;
 
     return UserMeta(
       role: role,
       startDate: startDate,
+      username: username,
     );
   }
 }

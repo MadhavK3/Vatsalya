@@ -9,7 +9,7 @@ class ChatHistoryDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final repoAsync = ref.watch(chatHistoryRepositoryProvider);
+    final sessionsAsync = ref.watch(chatSessionsProvider);
 
     return Drawer(
       child: Column(
@@ -42,17 +42,8 @@ class ChatHistoryDrawer extends ConsumerWidget {
           ),
           const Divider(),
           Expanded(
-            child: repoAsync.when(
-              data: (repo) {
-                // We need to listen to a stream or force rebuild when list changes.
-                // For now, let's just fetch. To make it reactive, we might need a StreamProvider or similar 
-                // but standard Hive usage often involves ValueListenable.
-                // Let's use a simple StateProvider or similar in a real app, 
-                // but here we can rely on parent rebuilding or just fetch on build.
-                // Better approach: AiChatNotifier keeps track of sessions or helps refresh.
-                // Simpler: Just query repo here.
-                final sessions = repo.getSessions();
-                
+            child: sessionsAsync.when(
+              data: (sessions) {
                 if (sessions.isEmpty) {
                   return const Center(child: Text('No saved chats'));
                 }
@@ -63,14 +54,20 @@ class ChatHistoryDrawer extends ConsumerWidget {
                     final session = sessions[index];
                     return Dismissible(
                       key: Key(session.id),
-                      background: Container(color: Colors.red, alignment: Alignment.centerRight, padding: const EdgeInsets.only(right: 16), child: const Icon(Icons.delete, color: Colors.white)),
+                      background: Container(
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 16),
+                        child: const Icon(Icons.delete, color: Colors.white),
+                      ),
                       direction: DismissDirection.endToStart,
-                      onDismissed: (direction) {
-                        repo.deleteSession(session.id);
-                        // If current session is deleted, clear it? handled by notifier logic ideally
+                      onDismissed: (direction) async {
+                        final repo = await ref.read(chatHistoryRepositoryProvider.future);
+                        await repo.deleteSession(session.id);
                         if (ref.read(aiResponseProvider.notifier).currentSessionId == session.id) {
-                            ref.read(aiResponseProvider.notifier).startNewSession();
+                          ref.read(aiResponseProvider.notifier).startNewSession();
                         }
+                        ref.invalidate(chatSessionsProvider);
                       },
                       child: ListTile(
                         title: Text(session.title, maxLines: 1, overflow: TextOverflow.ellipsis),
@@ -82,13 +79,12 @@ class ChatHistoryDrawer extends ConsumerWidget {
                         trailing: IconButton(
                           icon: const Icon(Icons.delete_outline),
                           onPressed: () async {
-                             await repo.deleteSession(session.id);
-                             if (ref.read(aiResponseProvider.notifier).currentSessionId == session.id) {
-                                ref.read(aiResponseProvider.notifier).startNewSession();
-                             }
-                             // Force rebuild? In riverpod we might want a "sessionsProvider"
-                             // Since we don't have one, simplistic way:
-                             (context as Element).markNeedsBuild(); 
+                            final repo = await ref.read(chatHistoryRepositoryProvider.future);
+                            await repo.deleteSession(session.id);
+                            if (ref.read(aiResponseProvider.notifier).currentSessionId == session.id) {
+                              ref.read(aiResponseProvider.notifier).startNewSession();
+                            }
+                            ref.invalidate(chatSessionsProvider);
                           },
                         ),
                       ),
@@ -97,7 +93,7 @@ class ChatHistoryDrawer extends ConsumerWidget {
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e,s) => Center(child: Text('Error: $e')),
+              error: (e, s) => Center(child: Text('Error: $e')),
             ),
           ),
         ],

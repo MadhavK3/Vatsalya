@@ -6,6 +6,7 @@ import 'package:maternal_infant_care/presentation/viewmodels/user_provider.dart'
 import 'package:maternal_infant_care/presentation/pages/auth_page.dart';
 import 'package:maternal_infant_care/presentation/pages/onboarding_page.dart';
 import 'package:maternal_infant_care/presentation/pages/settings_page.dart';
+import 'package:maternal_infant_care/presentation/viewmodels/user_meta_provider.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -15,8 +16,11 @@ class ProfilePage extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
     final profileType = ref.watch(userProfileProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final userMeta = ref.watch(userMetaProvider);
     
-    final displayName = user?.email ?? 'User';
+    final displayName = (userMeta.username != null && userMeta.username!.isNotEmpty) 
+        ? userMeta.username! 
+        : (user?.email ?? 'User');
     final initials = displayName.isNotEmpty ? displayName[0].toUpperCase() : 'U';
 
     return Scaffold(
@@ -60,7 +64,16 @@ class ProfilePage extends ConsumerWidget {
                     fontWeight: FontWeight.bold,
                   ),
             ),
-            // Username display removed
+            if (userMeta.username != null && userMeta.username!.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(
+                '@${userMeta.username}',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.w500,
+                    ),
+              ),
+            ],
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

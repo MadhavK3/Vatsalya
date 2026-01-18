@@ -217,6 +217,255 @@ class _DiseaseAwarenessPageState extends ConsumerState<DiseaseAwarenessPage> {
         ],
         'riskLevel': 'High',
       },
+      {
+        'name': 'Croup',
+        'category': 'Respiratory',
+        'icon': Icons.record_voice_over,
+        'color': const Color(0xFF7986CB), // Indigo
+        'symptoms': [
+          'Barking cough (sounds like a seal)',
+          'Hoarseness',
+          'Stridor (high-pitched breathing)',
+          'Low-grade fever',
+        ],
+        'prevention': [
+          'Maintain good hand hygiene',
+          'Keep infant away from people with respiratory infections',
+          'Ensure vaccinations are up to date',
+        ],
+        'homeCare': [
+          'Keep child calm (crying worsens symptoms)',
+          'Use a cool-mist humidifier',
+          'Brief exposure to cool night air can help',
+          'Steam from a hot shower for 10 minutes',
+        ],
+        'seeDoctor': [
+          'Stridor while resting',
+          'Difficulty swallowing',
+          'Extreme irritability or fatigue',
+          'Bluish skin or lips',
+        ],
+        'riskLevel': 'Moderate',
+      },
+      {
+        'name': 'Ear Infection',
+        'category': 'Common',
+        'icon': Icons.hearing,
+        'color': const Color(0xFFBA68C8), // Purple
+        'symptoms': [
+          'Ear pulling/tugging',
+          'Fussiness',
+          'Difficulty sleeping',
+          'Fluid drainage from ear',
+          'Fever',
+        ],
+        'prevention': [
+          'Avoid second-hand smoke',
+          'Breastfeed for at least 6 months',
+          'Ensure vaccinations (especially flu and pneumococcal)',
+          'Avoid bottle-feeding while lying flat',
+        ],
+        'homeCare': [
+          'Warm compress over the ear',
+          'Rest and extra fluids',
+          'Follow doctor-prescribed pain relief',
+          'Monitor for changes in hearing',
+        ],
+        'seeDoctor': [
+          'Severe pain or high fever',
+          'Fluid, pus, or bloody discharge',
+          'Hearing loss symptoms',
+          'Symptoms not improving after 48 hours',
+        ],
+        'riskLevel': 'Moderate',
+      },
+      {
+        'name': 'Hand, Foot, & Mouth',
+        'category': 'Other',
+        'icon': Icons.pan_tool_alt,
+        'color': const Color(0xFFF06292), // Pink
+        'symptoms': [
+          'Fever',
+          'Sore throat',
+          'Small blisters on hands and feet',
+          'Painful mouth sores',
+          'Loss of appetite',
+        ],
+        'prevention': [
+          'Frequent hand washing',
+          'Disinfect toys and common areas',
+          'Avoid sharing cups or utensils',
+          'Keep child home until blisters dry',
+        ],
+        'homeCare': [
+          'Offer cold drinks or soft foods',
+          'Avoid spicy or acidic foods',
+          'Maintain hydration',
+          'Monitor temperature',
+        ],
+        'seeDoctor': [
+          'Signs of dehydration',
+          'Mouth sores making drinking impossible',
+          'High fever not coming down',
+          'Lethargy or confusion',
+        ],
+        'riskLevel': 'Medium',
+      },
+      {
+        'name': 'Diaper Rash',
+        'category': 'Common',
+        'icon': Icons.child_care,
+        'color': const Color(0xFF4DB6AC), // Teal
+        'symptoms': [
+          'Redness in diaper area',
+          'Small red bumps',
+          'Child cry when diaper area is touched',
+          'Peeling or scaling skin',
+        ],
+        'prevention': [
+          'Change diapers frequently',
+          'Clean area gently with water',
+          'Allow "air time" without a diaper',
+          'Apply barrier cream (zinc oxide)',
+        ],
+        'homeCare': [
+          'Increase diaper changes',
+          'Use mild, fragrance-free wipes',
+          'Pat skin dry, don\'t rub',
+          'Rinse area with warm water at each change',
+        ],
+        'seeDoctor': [
+          'Blisters or pus-filled sores',
+          'Rash spreading beyond diaper area',
+          'Fever with rash',
+          'Rash that doesn\'t improve in 3 days',
+        ],
+        'riskLevel': 'Low',
+      },
+      {
+        'name': 'Jaundice',
+        'category': 'Other',
+        'icon': Icons.face_retouching_natural,
+        'color': const Color(0xFFFFF176), // Yellow
+        'symptoms': [
+          'Yellowish skin and eye whites',
+          'Poor feeding',
+          'High-pitched crying',
+          'Lethargy or sleepiness',
+        ],
+        'prevention': [
+          'Ensure baby is feeding well 8-12 times a day',
+          'Check skin color in natural light',
+          'Avoid dehydration',
+        ],
+        'homeCare': [
+          'Frequent feedings to help clear bilirubin in stools',
+          'Monitor diaper output',
+          'Follow pediatrician\'s instructions closely',
+          'Exposure to indirect sunlight (only if advised)',
+        ],
+        'seeDoctor': [
+          'Yellowing spreading to arms/legs',
+          'Yellow skin seems dark or deep',
+          'Baby is hard to wake up',
+          'Baby not gaining weight',
+        ],
+        'riskLevel': 'Moderate',
+      },
+      {
+        'name': 'Colic',
+        'category': 'Digestive',
+        'icon': Icons.sentiment_very_dissatisfied,
+        'color': const Color(0xFFFF8A65), // Deep Orange
+        'symptoms': [
+          'Intense crying for 3+ hours a day',
+          'Crying occurs at the same time each day',
+          'Clenched fists or curled legs',
+          'Red face during crying',
+        ],
+        'prevention': [
+          'Try different soothing techniques',
+          'Maintain a calm environment',
+          'Burp baby frequently during feeds',
+          'Consider dietary changes if breastfeeding',
+        ],
+        'homeCare': [
+          'Gentle rhythmic rocking',
+          'White noise or soft music',
+          'Warm bath or tummy massage',
+          'Ensure caregiver gets breaks/rest',
+        ],
+        'seeDoctor': [
+          'Crying pattern changes suddenly',
+          'Fever, vomiting, or diarrhea',
+          'Baby seems in pain, not just fussy',
+          'Caregiver feels overwhelmed or angry',
+        ],
+        'riskLevel': 'Low',
+      },
+      {
+        'name': 'Constipation',
+        'category': 'Digestive',
+        'icon': Icons.hourglass_empty,
+        'color': const Color(0xFF9CCC65), // Light Green
+        'symptoms': [
+          'Hard, pellet-like stools',
+          'Straining or pain during bowel movements',
+          'Abdominal bloating',
+          'Blood on outside of stool',
+        ],
+        'prevention': [
+          'Ensure adequate fluid intake',
+          'Introduce high-fiber foods (if on solids)',
+          'Tummy time and leg exercises',
+          'Maintain regular feeding schedule',
+        ],
+        'homeCare': [
+          'Gently move baby\'s legs in "bicycle" motion',
+          'Warm bath to relax abdominal muscles',
+          'Small amounts of prune or pear juice (if advised)',
+          'Gentle tummy massage',
+        ],
+        'seeDoctor': [
+          'Vomiting with constipation',
+          'Extremely swollen belly',
+          'Persistent blood in stool',
+          'Not passing stool for several days',
+        ],
+        'riskLevel': 'Low',
+      },
+      {
+        'name': 'Pneumonia',
+        'category': 'Respiratory',
+        'icon': Icons.medical_information,
+        'color': const Color(0xFFE57373), // Red
+        'symptoms': [
+          'Rapid or labored breathing',
+          'Chest retractions (skin pulling in)',
+          'Persistent deep cough',
+          'High fever and chills',
+          'Wheezing or grunting sounds',
+        ],
+        'prevention': [
+          'Timely PCV and Hib vaccinations',
+          'Exclusive breastfeeding for first 6 months',
+          'Keep away from tobacco smoke',
+          'Avoid crowded indoor spaces with sick people',
+        ],
+        'homeCare': [
+          'Ensure strictly prescribed medications are taken',
+          'Maximize rest and hydration',
+          'Keep infant in semi-upright position',
+          'Monitor oxygen levels if advised',
+        ],
+        'seeDoctor': [
+          'Nostrils flaring with each breath',
+          'Bluish tint to lips or nails',
+          'Extreme difficulty breathing',
+          'Unable to feed or keep fluids down',
+        ],
+        'riskLevel': 'High',
+      },
     ];
   }
 }

@@ -29,6 +29,12 @@ class AuthService {
     );
   }
 
+  Future<UserResponse> updatePassword(String newPassword) async {
+    return await _supabase.auth.updateUser(
+      UserAttributes(password: newPassword),
+    );
+  }
+
   User? get currentUser => _supabase.auth.currentUser;
 
   Stream<AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;

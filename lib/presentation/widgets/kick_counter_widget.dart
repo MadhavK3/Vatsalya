@@ -14,14 +14,79 @@ class _KickCounterWidgetState extends ConsumerState<KickCounterWidget> {
   bool _isSessionActive = false;
   int _sessionKicks = 0;
   DateTime? _sessionStartTime;
-  Stopwatch _stopwatch = Stopwatch();
+  final Stopwatch _stopwatch = Stopwatch();
+  bool _showCelebration = false;
+
+  void _incrementKicks() {
+    setState(() {
+      _sessionKicks++;
+      if (_sessionKicks == 10) {
+        _showCelebration = true;
+      }
+    });
+
+    if (_sessionKicks == 10) {
+      // Auto-hide celebration after 3 seconds
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted) setState(() => _showCelebration = false);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (_isSessionActive) {
-      return _buildActiveSessionCard(context);
-    }
-    return _buildStartCard(context);
+    return Stack(
+      children: [
+        if (_isSessionActive)
+          _buildActiveSessionCard(context)
+        else
+          _buildStartCard(context),
+        
+        if (_showCelebration)
+          _buildCelebrationOverlay(),
+      ],
+    );
+  }
+
+  Widget _buildCelebrationOverlay() {
+    return Positioned.fill(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.2),
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.elasticOut,
+                builder: (context, value, child) {
+                  return Transform.scale(
+                    scale: value,
+                    child: const Icon(Icons.favorite, color: Colors.pink, size: 100),
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Great Job!',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: Colors.pink,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Text(
+                '10 kicks reached! Your baby is active!',
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildStartCard(BuildContext context) {
@@ -63,6 +128,7 @@ class _KickCounterWidgetState extends ConsumerState<KickCounterWidget> {
                     _isSessionActive = true;
                     _sessionStartTime = DateTime.now();
                     _sessionKicks = 0;
+                    _showCelebration = false;
                     _stopwatch.reset();
                     _stopwatch.start();
                   });
@@ -83,57 +149,77 @@ class _KickCounterWidgetState extends ConsumerState<KickCounterWidget> {
 
   Widget _buildActiveSessionCard(BuildContext context) {
     return Card(
-      color: Colors.pink[50], // Soft pink background
+      color: Colors.pink[50],
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            Text(
-              'Session Active',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: Colors.pink[900],
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 24),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '$_sessionKicks kicks',
-                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                    color: Colors.pink,
+                  'Session Active',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: Colors.pink[900],
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            Row(
-              children: [
-                Expanded(
-                  child: SizedBox(
-                    height: 60,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _sessionKicks++;
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.pink,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      ),
-                      child: const Text('TAP KICK!', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => setState(() => _isSessionActive = false),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            TextButton(
+            const SizedBox(height: 24),
+            TweenAnimationBuilder<double>(
+              key: ValueKey(_sessionKicks),
+              tween: Tween(begin: 1.0, end: 1.2),
+              duration: const Duration(milliseconds: 100),
+              builder: (context, value, child) {
+                return Transform.scale(
+                  scale: _sessionKicks > 0 ? value : 1.0,
+                  child: child,
+                );
+              },
+              child: Text(
+                '$_sessionKicks',
+                style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                  color: Colors.pink,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const Text('Kicks detected', style: TextStyle(color: Colors.pink)),
+            const SizedBox(height: 32),
+            GestureDetector(
+              onTap: _incrementKicks,
+              child: Container(
+                height: 120,
+                width: 120,
+                decoration: BoxDecoration(
+                  color: Colors.pink,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.pink.withOpacity(0.3),
+                      blurRadius: 15,
+                      spreadRadius: 5,
+                    ),
+                  ],
+                ),
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.touch_app, color: Colors.white, size: 40),
+                    Text('TAP', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 32),
+            TextButton.icon(
               onPressed: () async {
                 _stopwatch.stop();
                 if (_sessionKicks > 0) {
@@ -148,7 +234,9 @@ class _KickCounterWidgetState extends ConsumerState<KickCounterWidget> {
                   _isSessionActive = false;
                 });
               },
-              child: const Text('Finish Session'),
+              icon: const Icon(Icons.check_circle_outline),
+              label: const Text('Finish and Save Session'),
+              style: TextButton.styleFrom(foregroundColor: Colors.pink[900]),
             ),
           ],
         ),

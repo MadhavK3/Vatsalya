@@ -217,7 +217,9 @@ class _ChatBubble extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: isUser ? colorScheme.primary : colorScheme.surfaceVariant,
+                color: isUser 
+                    ? colorScheme.primary 
+                    : (message.isError ? colorScheme.errorContainer : colorScheme.surfaceVariant),
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(16),
                   topRight: const Radius.circular(16),
@@ -228,10 +230,31 @@ class _ChatBubble extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                   if (message.isError)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.error_outline, size: 14, color: colorScheme.error),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Error',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.error,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   Text(
                     message.text,
                     style: TextStyle(
-                      color: isUser ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
+                      color: isUser 
+                          ? colorScheme.onPrimary 
+                          : (message.isError ? colorScheme.onErrorContainer : colorScheme.onSurfaceVariant),
                     ),
                   ),
                   const SizedBox(height: 4),

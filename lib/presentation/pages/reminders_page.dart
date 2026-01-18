@@ -6,6 +6,7 @@ import 'package:maternal_infant_care/data/models/reminder_model.dart';
 import 'package:maternal_infant_care/presentation/viewmodels/repository_providers.dart';
 import 'package:maternal_infant_care/presentation/viewmodels/smart_reminder_provider.dart';
 import 'package:maternal_infant_care/presentation/widgets/smart_reminder_card.dart';
+import 'package:maternal_infant_care/core/utils/notification_service.dart';
 
 class RemindersPage extends ConsumerStatefulWidget {
   const RemindersPage({super.key});
@@ -23,6 +24,24 @@ class _RemindersPageState extends ConsumerState<RemindersPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Reminders'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_active),
+            tooltip: 'Test Notification',
+            onPressed: () async {
+              await NotificationService.showInstantNotification(
+                id: 999,
+                title: 'System Active 🚀',
+                body: 'Your notification system is working perfectly.',
+              );
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Test notification sent!')),
+                );
+              }
+            },
+          ),
+        ],
       ),
       body: reminderRepo.when(
         data: (repo) {
@@ -96,7 +115,6 @@ class _RemindersPageState extends ConsumerState<RemindersPage> {
                 SliverToBoxAdapter(
                   child: Container(
                     padding: const EdgeInsets.all(16.0),
-                    color: Theme.of(context).colorScheme.primaryContainer,
                     child: Row(
                       children: [
                         Icon(
@@ -178,6 +196,7 @@ class _RemindersPageState extends ConsumerState<RemindersPage> {
         onPressed: () => _showAddReminderDialog(context),
         icon: const Icon(Icons.add),
         label: const Text('Add Reminder'),
+        heroTag: 'fab_reminders',
       ),
     );
   }
@@ -294,7 +313,8 @@ class _RemindersPageState extends ConsumerState<RemindersPage> {
 
                   if (mounted) {
                     Navigator.pop(context);
-                    setState(() {});
+                    // Force the provider to refresh and show the new reminder
+                    ref.invalidate(reminderRepositoryProvider);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Reminder scheduled')),
                     );

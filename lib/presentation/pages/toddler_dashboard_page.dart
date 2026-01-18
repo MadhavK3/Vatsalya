@@ -13,6 +13,7 @@ import 'package:maternal_infant_care/presentation/pages/growth_tracking_page.dar
 import 'package:maternal_infant_care/presentation/pages/activity_ideas_page.dart';
 import 'package:maternal_infant_care/presentation/pages/daily_summary_page.dart';
 import 'package:maternal_infant_care/presentation/pages/weekly_stats_page.dart';
+import 'package:maternal_infant_care/presentation/viewmodels/user_meta_provider.dart';
 
 class ToddlerDashboardPage extends ConsumerWidget {
   const ToddlerDashboardPage({super.key});
@@ -20,19 +21,31 @@ class ToddlerDashboardPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return CustomizableDashboard(
-      header: _buildHeader(context),
+      header: _buildHeader(context, ref),
       cardBuilder: (context, card) {
         return _buildCardContent(context, card);
       },
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(BuildContext context, WidgetRef ref) {
+    final userMeta = ref.watch(userMetaProvider);
+    final username = userMeta.username;
+    final displayName = (username != null && username.isNotEmpty) ? username : 'Parent';
+
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0, bottom: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            'Hi, $displayName',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                ),
+          ),
+          const SizedBox(height: 16),
           Row(
             children: [
                Icon(Icons.child_care, color: Colors.orange[400], size: 28),

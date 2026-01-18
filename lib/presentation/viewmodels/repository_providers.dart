@@ -92,3 +92,8 @@ final chatHistoryRepositoryProvider = FutureProvider<ChatHistoryRepository>((ref
   await repo.init();
   return repo;
 });
+
+final chatSessionsProvider = FutureProvider((ref) async {
+  final repo = await ref.watch(chatHistoryRepositoryProvider.future);
+  return repo.getSessions();
+});

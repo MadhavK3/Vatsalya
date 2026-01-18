@@ -7,6 +7,7 @@ import 'package:maternal_infant_care/presentation/viewmodels/user_provider.dart'
 import 'package:maternal_infant_care/presentation/viewmodels/user_meta_provider.dart';
 import 'package:maternal_infant_care/presentation/pages/pregnancy_setup_page.dart';
 import 'package:maternal_infant_care/presentation/pages/toddler_setup_page.dart';
+import 'package:maternal_infant_care/core/utils/notification_service.dart';
 
 // We'll import these when we create them, for now using placeholders/existing
 import 'package:maternal_infant_care/presentation/pages/pregnant_dashboard_page.dart';
@@ -21,6 +22,17 @@ class MainNavigationShell extends ConsumerStatefulWidget {
 
 class _MainNavigationShellState extends ConsumerState<MainNavigationShell> {
   int _currentIndex = 0;
+  
+  @override
+  void initState() {
+    super.initState();
+    _requestNotificationPermission();
+  }
+
+  Future<void> _requestNotificationPermission() async {
+    final granted = await NotificationService.requestPermission();
+    print('DEBUG: MainNavigationShell - Notification permission granted: $granted');
+  }
 
   @override
   Widget build(BuildContext context) {

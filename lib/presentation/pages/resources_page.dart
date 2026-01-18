@@ -80,25 +80,57 @@ class _ResourcesPageState extends ConsumerState<ResourcesPage> {
           ),
           
 
-          Column(
-            children: [
+          CustomScrollView(
+            slivers: [
               // Add top padding for status bar + transparency
-              SizedBox(height: MediaQuery.of(context).padding.top + kToolbarHeight),
+              SliverToBoxAdapter(
+                child: SizedBox(height: MediaQuery.of(context).padding.top + kToolbarHeight),
+              ),
               
-              _buildSearchAndFilters(context),
-              Expanded(
-                child: filteredArticles.isEmpty
-                    ? _buildEmptyState(context)
-                    : MasonryGridView.count(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                        itemCount: filteredArticles.length,
-                        itemBuilder: (context, index) {
-                          return ResourceCard(article: filteredArticles[index]);
-                        },
+              SliverToBoxAdapter(
+                child: _buildSearchAndFilters(context),
+              ),
+              
+              filteredArticles.isEmpty
+                  ? SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _buildEmptyState(context),
+                    )
+                  : SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            // Build rows of 2 items each
+                            final startIndex = index * 2;
+                            if (startIndex >= filteredArticles.length) return null;
+                            
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: ResourceCard(article: filteredArticles[startIndex]),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: startIndex + 1 < filteredArticles.length
+                                        ? ResourceCard(article: filteredArticles[startIndex + 1])
+                                        : const SizedBox(),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          childCount: (filteredArticles.length / 2).ceil(),
+                        ),
                       ),
+                    ),
+              
+              // Bottom padding
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 80),
               ),
             ],
           ),
@@ -112,6 +144,7 @@ class _ResourcesPageState extends ConsumerState<ResourcesPage> {
         },
         icon: const Icon(Icons.auto_awesome),
         label: const Text('Ask AI'),
+        heroTag: 'fab_resources',
         backgroundColor: Colors.white,
         foregroundColor: const Color(0xFF6A1B9A), // Purple accent
         elevation: 4,
@@ -381,11 +414,31 @@ Eating a balanced diet is crucial for your baby's development.
           icon: Icons.fitness_center,
           color: Color(0xFF90CAF9), // Soft Blue
           category: 'Health',
-          readingTime: '3 min',
+          readingTime: '5 min',
           content: '''
-# Safe Exercises
+# Safe Exercises During Pregnancy
 
-Walking, swimming, and prenatal yoga are excellent choices. Avoid high-impact sports or activities with fall risks. Always consult your doctor before starting a new routine.
+Staying active is healthy for both you and your baby! It can improve mood, sleep, and even make labor easier.
+
+## Recommended Activities
+*   **Walking:** The perfect low-impact exercise. Easy on the joints and can be done anywhere.
+*   **Swimming:** Water supports your weight, relieving back tension and preventing overheating.
+*   **Prenatal Yoga:** Great for flexibility, breathing (useful for labor!), and relaxation.
+*   **Pilates:** Focuses on core strength, which helps support your growing belly.
+
+## Trimester Specific Tips
+*   **First Trimester:** Don't overdo it. Listen to your body and rest if you feel nauseous or fatigued.
+*   **Second Trimester:** Avoid exercises lying flat on your back, as this can reduce blood flow.
+*   **Third Trimester:** Focus on pelvic floor exercises (Kegels) and gentle movements.
+
+## ⚠️ Stop Exercising If You Experience:
+*   Dizziness or feeling faint.
+*   Shortness of breath before starting exercise.
+*   Chest pain or headache.
+*   Vaginal bleeding or fluid leaking.
+*   Calf pain or swelling.
+
+*Always consult your doctor before starting any new exercise routine.*
 ''',
         ),
          const ResourceArticleModel(
@@ -395,11 +448,31 @@ Walking, swimming, and prenatal yoga are excellent choices. Avoid high-impact sp
           icon: Icons.spa,
           color: Color(0xFF80CBC4), // Soft Teal
           category: 'Mother Care',
-          readingTime: '4 min',
+          readingTime: '6 min',
           content: '''
-# Mental Wellness
+# Your Mental Wellness Matters
 
-Pregnancy brings hormonal changes that affect your mood. Prioritize self-care, sleep, and talk to someone if you feel overwhelmed.
+Pregnancy is a time of huge transition. It's completely normal to feel a mix of excitement, anxiety, and everything in between.
+
+## Managing Your Emotions
+*   **Acknowledge Your Feelings:** Don't judge yourself for feeling anxious or overwhelmed. 
+*   **Talk it Out:** Share your thoughts with your partner, a friend, or a support group.
+*   **Limit "Information Overload":** Constant googling can increase anxiety. Stick to trusted sources like Vatsalya.
+*   **Self-Care Rituals:** Whether it's a warm bath, reading, or listening to music, make time for things you love.
+
+## Stress Relief Techniques
+1.  **Box Breathing:** Inhale for 4s, hold for 4s, exhale for 4s, hold for 4s.
+2.  **Mindfulness:** Try to focus on the present moment during daily tasks.
+3.  **Journaling:** Writing down your thoughts can help clear your mind.
+
+## When to Seek Professional Support
+It's time to talk to a doctor or therapist if you experience:
+*   Persistent sadness or hopelessness.
+*   Constant, overwhelming worry.
+*   Loss of interest in things you used to enjoy.
+*   Changes in appetite or sleep patterns not related to pregnancy.
+
+*You are not alone. Reaching out is a sign of strength.*
 ''',
         ),
         const ResourceArticleModel(

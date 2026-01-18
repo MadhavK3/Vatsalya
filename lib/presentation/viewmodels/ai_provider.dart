@@ -27,11 +27,8 @@ final geminiServiceProvider = Provider<GeminiService>((ref) {
 
 final aiResponseProvider = StateNotifierProvider<AiChatNotifier, List<ChatMessage>>((ref) {
   final service = ref.watch(geminiServiceProvider);
-  // Ideally we should inject the repository, but simpler to use ref.read inside or pass it.
-  // Passing it is cleaner but requires changing constructor.
-  // Let's watch the FutureProvider. If it's not ready, we wait or have optional repo.
   final repoAsync = ref.watch(chatHistoryRepositoryProvider);
-  return AiChatNotifier(service, repoAsync.value);
+  return AiChatNotifier(service, repoAsync.value, ref);
 });
 
 class ChatMessage {
@@ -39,10 +36,13 @@ class ChatMessage {
   final bool isUser;
   final DateTime timestamp;
 
+  final bool isError;
+
   ChatMessage({
     required this.text,
     required this.isUser,
     required this.timestamp,
+    this.isError = false,
   });
 
   Map<String, dynamic> toJson() {
@@ -58,6 +58,7 @@ class ChatMessage {
       text: json['text'],
       isUser: json['isUser'],
       timestamp: DateTime.parse(json['timestamp']),
+      isError: json['isError'] ?? false,
     );
   }
 }
@@ -65,9 +66,10 @@ class ChatMessage {
 class AiChatNotifier extends StateNotifier<List<ChatMessage>> {
   final GeminiService _service;
   final ChatHistoryRepository? _repository;
+  final Ref _ref;
   String? currentSessionId;
 
-  AiChatNotifier(this._service, this._repository) : super([]) {
+  AiChatNotifier(this._service, this._repository, this._ref) : super([]) {
     // Optionally load last session or start new?
     // For now, let's start fresh.
   }
@@ -76,6 +78,7 @@ class AiChatNotifier extends StateNotifier<List<ChatMessage>> {
     currentSessionId = null;
     state = [];
     _service.clearSession();
+    _ref.invalidate(chatSessionsProvider);
   }
 
   Future<void> loadSession(String sessionId) async {
@@ -99,6 +102,7 @@ class AiChatNotifier extends StateNotifier<List<ChatMessage>> {
           return Content(msg.isUser ? 'user' : 'model', [TextPart(msg.text)]);
         }).toList();
       _service.initializeSession(contentHistory);
+      _ref.invalidate(chatSessionsProvider);
     }
   }
 
@@ -133,6 +137,7 @@ class AiChatNotifier extends StateNotifier<List<ChatMessage>> {
     );
 
     await _repository!.saveSession(session);
+    _ref.invalidate(chatSessionsProvider);
   }
 
   Future<void> sendMessage(String text) async {
@@ -145,11 +150,18 @@ class AiChatNotifier extends StateNotifier<List<ChatMessage>> {
     state = [...state, userMessage];
 
     final response = await _service.sendMessage(text);
-    
+
+    final isError = response.startsWith('Error:') || 
+                    response.startsWith('Rate limit') || 
+                    response.startsWith('API key') ||
+                    response.startsWith('Network error') ||
+                    response.startsWith('Sorry, I encountered an error');
+
     final aiMessage = ChatMessage(
       text: response,
       isUser: false,
       timestamp: DateTime.now(),
+      isError: isError,
     );
 
     state = [...state, aiMessage];
@@ -163,5 +175,6 @@ class AiChatNotifier extends StateNotifier<List<ChatMessage>> {
     _service.clearSession();
     state = [];
     currentSessionId = null;
+    _ref.invalidate(chatSessionsProvider);
   }
 }

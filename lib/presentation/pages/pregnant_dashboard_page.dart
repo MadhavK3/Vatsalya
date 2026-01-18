@@ -20,19 +20,31 @@ class PregnantDashboardPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return CustomizableDashboard(
-      header: _buildHeader(context),
+      header: _buildHeader(context, ref),
       cardBuilder: (context, card) {
         return _buildCardContent(context, card);
       },
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(BuildContext context, WidgetRef ref) {
+    final userMeta = ref.watch(userMetaProvider);
+    final username = userMeta.username;
+    final displayName = (username != null && username.isNotEmpty) ? username : 'Mama';
+
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0, bottom: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            'Hi, $displayName',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                ),
+          ),
+          const SizedBox(height: 16),
           Row(
             children: [
                Icon(Icons.favorite, color: Colors.pink[300], size: 28),

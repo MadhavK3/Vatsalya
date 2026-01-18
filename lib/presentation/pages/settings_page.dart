@@ -14,24 +14,48 @@ class SettingsPage extends ConsumerStatefulWidget {
 }
 
 class _SettingsPageState extends ConsumerState<SettingsPage> {
-  // No username controller anymore
+  final _usernameController = TextEditingController();
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // No username initialization needed
+      final userMeta = ref.read(userMetaProvider);
+      _usernameController.text = userMeta.username ?? '';
     });
   }
 
   @override
   void dispose() {
-    // _usernameController.dispose(); removed
+    _usernameController.dispose();
     super.dispose();
   }
 
-  // _updateUsername removed
+  Future<void> _updateUsername() async {
+    final username = _usernameController.text.trim();
+    if (username.isEmpty) return;
+
+    setState(() => _isLoading = true);
+    try {
+      await ref.read(authServiceProvider).updateUserMetadata({
+        'username': username,
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Username updated successfully')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error updating username: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   Future<void> _updateStartDate() async {
     final userMeta = ref.read(userMetaProvider);
@@ -67,6 +91,88 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     }
   }
 
+  Future<void> _showChangePasswordDialog() async {
+    final passwordController = TextEditingController();
+    final confirmPasswordController = TextEditingController();
+    bool isObscure = true;
+
+    return showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Change Password'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: passwordController,
+                obscureText: isObscure,
+                decoration: InputDecoration(
+                  labelText: 'New Password',
+                  suffixIcon: IconButton(
+                    icon: Icon(isObscure ? Icons.visibility : Icons.visibility_off),
+                    onPressed: () => setDialogState(() => isObscure = !isObscure),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: confirmPasswordController,
+                obscureText: isObscure,
+                decoration: const InputDecoration(
+                  labelText: 'Confirm Password',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                final password = passwordController.text.trim();
+                final confirmPassword = confirmPasswordController.text.trim();
+
+                if (password.isEmpty || password.length < 6) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Password must be at least 6 characters')),
+                  );
+                  return;
+                }
+
+                if (password != confirmPassword) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Passwords do not match')),
+                  );
+                  return;
+                }
+
+                try {
+                  await ref.read(authServiceProvider).updatePassword(password);
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Password updated successfully')),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: $e')),
+                    );
+                  }
+                }
+              },
+              child: const Text('Update'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeModeProvider);
@@ -82,7 +188,30 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         children: [
           _buildSectionHeader('Account'),
           const SizedBox(height: 16),
-          // Username field removed
+          TextField(
+            controller: _usernameController,
+            decoration: InputDecoration(
+              labelText: 'Username',
+              prefixIcon: const Icon(Icons.person_outline),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.check, color: Colors.green),
+                onPressed: _isLoading ? null : _updateUsername,
+              ),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+          const SizedBox(height: 32),
+          _buildSectionHeader('Security'),
+          const SizedBox(height: 16),
+          ListTile(
+            title: const Text('Change Password'),
+            subtitle: const Text('Update your account password'),
+            leading: Icon(Icons.lock_outline, color: Theme.of(context).colorScheme.primary),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            onTap: _showChangePasswordDialog,
+            tileColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
           const SizedBox(height: 32),
           _buildSectionHeader('My Journey'),
           const SizedBox(height: 16),
@@ -92,17 +221,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             leading: Icon(isPregnancy ? Icons.pregnant_woman : Icons.child_care, color: Theme.of(context).colorScheme.primary),
             trailing: const Icon(Icons.edit_outlined, size: 20),
             onTap: _updateStartDate,
-            tileColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-          const SizedBox(height: 32),
-          _buildSectionHeader('Appearance'),
-          const SizedBox(height: 16),
-          SwitchListTile(
-            title: const Text('Dark Mode'),
-            secondary: Icon(themeMode == ThemeMode.dark ? Icons.dark_mode : Icons.light_mode, color: Theme.of(context).colorScheme.primary),
-            value: themeMode == ThemeMode.dark,
-            onChanged: (val) => ref.read(themeModeProvider.notifier).toggleTheme(),
             tileColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
