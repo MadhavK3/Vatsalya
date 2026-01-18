@@ -71,42 +71,32 @@ class _DailySummaryPageState extends ConsumerState<DailySummaryPage> {
       ),
       body: Stack(
         children: [
-          // Glassy Gradient Background
+          // Parchment background
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFFE3F2FD), // Light Blue
-                  Color(0xFFF3E5F5), // Light Purple
-                ],
-              ),
-            ),
+             color: Theme.of(context).scaffoldBackgroundColor,
           ),
           
           SafeArea(
             child: Column(
               children: [
-                _buildDateNavigator(),
+                _buildDateNavigator(context),
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildSummaryCards(feedingRepo, sleepRepo, diaperRepo),
+                        _buildSummaryCards(context, feedingRepo, sleepRepo, diaperRepo),
                         const SizedBox(height: 24),
                         Text(
                           'Timeline',
-                          style: TextStyle(
-                            fontSize: 20,
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
                             fontWeight: FontWeight.bold,
-                            color: Colors.blueGrey[800],
                           ),
                         ),
                         const SizedBox(height: 12),
-                        _buildTimeline(feedingRepo, sleepRepo, diaperRepo),
+                        _buildTimeline(context, feedingRepo, sleepRepo, diaperRepo),
                       ],
                     ),
                   ),
@@ -119,14 +109,14 @@ class _DailySummaryPageState extends ConsumerState<DailySummaryPage> {
     );
   }
 
-  Widget _buildDateNavigator() {
+  Widget _buildDateNavigator(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.6),
+        color: Theme.of(context).colorScheme.surface.withOpacity(0.6),
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.white.withOpacity(0.8)),
+        border: Border.all(color: Theme.of(context).colorScheme.secondary.withOpacity(0.5)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -134,14 +124,13 @@ class _DailySummaryPageState extends ConsumerState<DailySummaryPage> {
           IconButton(
             icon: const Icon(Icons.arrow_back_ios, size: 18),
             onPressed: () => _changeDate(-1),
-            color: Colors.blueGrey,
+            color: Theme.of(context).colorScheme.primary,
           ),
           Text(
             DateFormat('EEEE, MMM d, y').format(_selectedDate),
-            style: TextStyle(
-              fontSize: 16,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
-              color: Colors.blueGrey[800],
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           IconButton(
@@ -151,7 +140,9 @@ class _DailySummaryPageState extends ConsumerState<DailySummaryPage> {
                     _selectedDate.year == DateTime.now().year
                 ? null
                 : () => _changeDate(1),
-            color: _selectedDate.day == DateTime.now().day ? Colors.grey.withOpacity(0.3) : Colors.blueGrey,
+            color: _selectedDate.day == DateTime.now().day 
+              ? Theme.of(context).disabledColor 
+              : Theme.of(context).colorScheme.primary,
           ),
         ],
       ),
@@ -159,10 +150,12 @@ class _DailySummaryPageState extends ConsumerState<DailySummaryPage> {
   }
 
   Widget _buildSummaryCards(
+    BuildContext context,
     AsyncValue<dynamic> feedingRepo,
     AsyncValue<dynamic> sleepRepo,
     AsyncValue<dynamic> diaperRepo,
   ) {
+    final theme = Theme.of(context);
     return Column(
       children: [
         Row(
@@ -176,8 +169,8 @@ class _DailySummaryPageState extends ConsumerState<DailySummaryPage> {
                     title: 'Feeding',
                     value: '${feedings.length}',
                     subtitle: '${totalMl.toStringAsFixed(0)} ml',
-                    icon: Icons.restaurant,
-                    color: Colors.orange,
+                    icon: Icons.restaurant_menu,
+                    color: theme.colorScheme.primary,
                   );
                 },
                 loading: () => const _LoadingCard(),
@@ -194,7 +187,7 @@ class _DailySummaryPageState extends ConsumerState<DailySummaryPage> {
                     value: '${hours.toStringAsFixed(1)} h',
                     subtitle: 'Total sleep',
                     icon: Icons.bedtime,
-                    color: Colors.indigo,
+                    color: theme.colorScheme.tertiary,
                   );
                 },
                 loading: () => const _LoadingCard(),
@@ -215,7 +208,7 @@ class _DailySummaryPageState extends ConsumerState<DailySummaryPage> {
                     value: '${changes.length}',
                     subtitle: 'Changes',
                     icon: Icons.layers,
-                    color: Colors.teal,
+                    color: theme.colorScheme.secondary,
                   );
                 },
                 loading: () => const _LoadingCard(),
@@ -232,11 +225,13 @@ class _DailySummaryPageState extends ConsumerState<DailySummaryPage> {
   }
 
   Widget _buildTimeline(
+    BuildContext context,
     AsyncValue<dynamic> feedingRepo,
     AsyncValue<dynamic> sleepRepo,
     AsyncValue<dynamic> diaperRepo,
   ) {
     List<_TimelineEvent> events = [];
+    final theme = Theme.of(context);
 
     // Combine data
     if (feedingRepo.hasValue) {
@@ -245,8 +240,8 @@ class _DailySummaryPageState extends ConsumerState<DailySummaryPage> {
             time: f.timestamp,
             title: 'Feeding',
             description: '${f.quantity}ml ${f.type}',
-            icon: Icons.restaurant,
-            color: Colors.orange,
+            icon: Icons.restaurant_menu,
+            color: theme.colorScheme.primary,
           )));
     }
 
@@ -257,14 +252,14 @@ class _DailySummaryPageState extends ConsumerState<DailySummaryPage> {
             title: 'Sleep Started',
             description: 'Nap',
             icon: Icons.bedtime,
-            color: Colors.indigo,
+            color: theme.colorScheme.tertiary,
           )));
       events.addAll(sleep.where((s) => s.endTime != null).map((s) => _TimelineEvent(
             time: s.endTime!,
             title: 'Woke Up',
             description: 'Duration: ${s.hours.toStringAsFixed(1)}h',
-            icon: Icons.sunny,
-            color: Colors.amber,
+            icon: Icons.wb_sunny_outlined,
+            color: theme.colorScheme.secondary,
           )));
     }
 
@@ -275,7 +270,7 @@ class _DailySummaryPageState extends ConsumerState<DailySummaryPage> {
             title: 'Diaper Change',
             description: 'Status: ${d.status}',
             icon: Icons.layers,
-            color: Colors.teal,
+            color: theme.colorScheme.secondary,
           )));
     }
 
@@ -287,16 +282,17 @@ class _DailySummaryPageState extends ConsumerState<DailySummaryPage> {
         width: double.infinity,
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.5),
+          color: theme.colorScheme.surface.withOpacity(0.5),
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: theme.colorScheme.secondary.withOpacity(0.3)),
         ),
         child: Column(
           children: [
-            Icon(Icons.history, size: 48, color: Colors.blueGrey.withOpacity(0.3)),
+            Icon(Icons.history_edu, size: 48, color: theme.colorScheme.onSurface.withOpacity(0.3)),
             const SizedBox(height: 16),
             Text(
               'No activities logged for this day',
-              style: TextStyle(color: Colors.blueGrey.withOpacity(0.6)),
+              style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.6)),
             ),
           ],
         ),
@@ -312,14 +308,14 @@ class _DailySummaryPageState extends ConsumerState<DailySummaryPage> {
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.7),
+            color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withOpacity(0.5)),
+            border: Border.all(color: event.color.withOpacity(0.3)),
             boxShadow: [
               BoxShadow(
                 color: event.color.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -334,14 +330,16 @@ class _DailySummaryPageState extends ConsumerState<DailySummaryPage> {
             ),
             title: Text(
               event.title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 15
+              ),
             ),
             subtitle: Text(event.description),
             trailing: Text(
               DateFormat('h:mm a').format(event.time),
-              style: TextStyle(
-                color: Colors.blueGrey[400],
-                fontSize: 12,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.7),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -372,14 +370,14 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.7),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.9)),
+        border: Border.all(color: color.withOpacity(0.5)),
         boxShadow: [
           BoxShadow(
             color: color.withOpacity(0.1),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -399,10 +397,9 @@ class _StatCard extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 title,
-                style: TextStyle(
-                  color: Colors.blueGrey[600],
-                  fontWeight: FontWeight.w500,
-                  fontSize: 13,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                  fontWeight: FontWeight.bold
                 ),
               ),
             ],
@@ -410,17 +407,16 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             value,
-            style: TextStyle(
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.blueGrey[900],
+              color: color,
             ),
           ),
           Text(
             subtitle,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.blueGrey[400],
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
             ),
           ),
         ],

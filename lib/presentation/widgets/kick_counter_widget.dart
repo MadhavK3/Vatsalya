@@ -52,7 +52,7 @@ class _KickCounterWidgetState extends ConsumerState<KickCounterWidget> {
     return Positioned.fill(
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.8),
+          color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Center(
@@ -66,7 +66,7 @@ class _KickCounterWidgetState extends ConsumerState<KickCounterWidget> {
                 builder: (context, value, child) {
                   return Transform.scale(
                     scale: value,
-                    child: const Icon(Icons.favorite, color: Colors.pink, size: 100),
+                    child: Icon(Icons.favorite, color: Theme.of(context).colorScheme.primary, size: 100),
                   );
                 },
               ),
@@ -74,7 +74,7 @@ class _KickCounterWidgetState extends ConsumerState<KickCounterWidget> {
               Text(
                 'Great Job!',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: Colors.pink,
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -92,7 +92,7 @@ class _KickCounterWidgetState extends ConsumerState<KickCounterWidget> {
   Widget _buildStartCard(BuildContext context) {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: Theme.of(context).cardTheme.shape,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -103,10 +103,10 @@ class _KickCounterWidgetState extends ConsumerState<KickCounterWidget> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.pink.withOpacity(0.1),
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.touch_app, color: Colors.pink),
+                  child: Icon(Icons.touch_app, color: Theme.of(context).colorScheme.primary),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -136,8 +136,8 @@ class _KickCounterWidgetState extends ConsumerState<KickCounterWidget> {
                 icon: const Icon(Icons.play_arrow),
                 label: const Text('Start Session'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.pink,
-                  foregroundColor: Colors.white,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
             ),
@@ -149,9 +149,9 @@ class _KickCounterWidgetState extends ConsumerState<KickCounterWidget> {
 
   Widget _buildActiveSessionCard(BuildContext context) {
     return Card(
-      color: Colors.pink[50],
+      color: Theme.of(context).colorScheme.surface,
       elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: Theme.of(context).cardTheme.shape,
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -162,7 +162,7 @@ class _KickCounterWidgetState extends ConsumerState<KickCounterWidget> {
                 Text(
                   'Session Active',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.pink[900],
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -186,12 +186,12 @@ class _KickCounterWidgetState extends ConsumerState<KickCounterWidget> {
               child: Text(
                 '$_sessionKicks',
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                  color: Colors.pink,
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-            const Text('Kicks detected', style: TextStyle(color: Colors.pink)),
+            Text('Kicks detected', style: TextStyle(color: Theme.of(context).colorScheme.secondary)),
             const SizedBox(height: 32),
             GestureDetector(
               onTap: _incrementKicks,
@@ -199,11 +199,11 @@ class _KickCounterWidgetState extends ConsumerState<KickCounterWidget> {
                 height: 120,
                 width: 120,
                 decoration: BoxDecoration(
-                  color: Colors.pink,
+                  color: Theme.of(context).colorScheme.primary,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.pink.withOpacity(0.3),
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
                       blurRadius: 15,
                       spreadRadius: 5,
                     ),
@@ -236,7 +236,7 @@ class _KickCounterWidgetState extends ConsumerState<KickCounterWidget> {
               },
               icon: const Icon(Icons.check_circle_outline),
               label: const Text('Finish and Save Session'),
-              style: TextButton.styleFrom(foregroundColor: Colors.pink[900]),
+              style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.primary),
             ),
           ],
         ),

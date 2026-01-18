@@ -23,121 +23,133 @@ class DailyTipsPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pregnancy Timeline'),
+        centerTitle: true,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        itemCount: 40,
-        itemBuilder: (context, index) {
-          final week = index + 1;
-          final isCurrent = week == currentWeek;
-          final isPast = week < currentWeek;
+      body: Stack(
+        children: [
+          Container(color: Theme.of(context).scaffoldBackgroundColor),
+          ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            itemCount: 40,
+            itemBuilder: (context, index) {
+              final week = index + 1;
+              final isCurrent = week == currentWeek;
+              final isPast = week < currentWeek;
 
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            child: IntrinsicHeight(
-              child: Row(
-                children: [
-                  // Timeline column
-                  Column(
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                child: IntrinsicHeight(
+                  child: Row(
                     children: [
-                      Container(
-                        width: 20,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: isCurrent 
-                              ? Theme.of(context).colorScheme.primary 
-                              : isPast 
-                                  ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
-                                  : Colors.grey[300],
-                          border: isCurrent 
-                              ? Border.all(color: Colors.white, width: 3) 
-                              : null,
-                          boxShadow: isCurrent 
-                              ? [BoxShadow(color: Theme.of(context).colorScheme.primary.withOpacity(0.5), blurRadius: 10)] 
-                              : null,
-                        ),
-                      ),
-                      if (week < 40)
-                        Expanded(
-                          child: Container(
-                            width: 2,
-                            color: isPast ? Theme.of(context).colorScheme.primary.withOpacity(0.5) : Colors.grey[300],
+                      // Timeline column
+                      Column(
+                        children: [
+                          Container(
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: isCurrent 
+                                  ? Theme.of(context).colorScheme.primary 
+                                  : isPast 
+                                      ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+                                      : Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+                              border: isCurrent 
+                                  ? Border.all(color: Theme.of(context).colorScheme.onPrimary, width: 2) 
+                                  : null,
+                              boxShadow: isCurrent 
+                                  ? [BoxShadow(color: Theme.of(context).colorScheme.primary.withOpacity(0.5), blurRadius: 10)] 
+                                  : null,
+                            ),
                           ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(width: 24),
-                  // Content column
-                  Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 24),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isCurrent 
-                            ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5) 
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: isCurrent 
-                            ? Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.3)) 
-                            : Border.all(color: Colors.grey[200]!),
-                        boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4))
+                          if (week < 40)
+                            Expanded(
+                              child: Container(
+                                width: 2,
+                                color: isPast ? Theme.of(context).colorScheme.primary.withOpacity(0.5) : Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+                              ),
+                            ),
                         ],
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Week $week',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: isCurrent ? Theme.of(context).colorScheme.primary : Colors.black87,
-                                ),
-                              ),
-                              if (isCurrent)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.primary,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Text('Today', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-                                ),
+                      const SizedBox(width: 24),
+                      // Content column
+                      Expanded(
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 24),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: isCurrent 
+                                ? Theme.of(context).colorScheme.surface 
+                                : Theme.of(context).colorScheme.surface.withOpacity(0.6),
+                            borderRadius: BorderRadius.circular(16),
+                            border: isCurrent 
+                                ? Border.all(color: Theme.of(context).colorScheme.secondary) 
+                                : Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1)),
+                            boxShadow: [
+                            BoxShadow(color: Theme.of(context).colorScheme.shadow.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 4))
                             ],
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            _getTipForWeek(week),
-                            style: TextStyle(
-                              color: Colors.grey[700],
-                              height: 1.4,
-                            ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Week $week',
+                                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: isCurrent ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
+                                    ),
+                                  ),
+                                  if (isCurrent)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.secondary,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        'Today', 
+                                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                          color: Theme.of(context).colorScheme.onSecondary, 
+                                          fontWeight: FontWeight.bold
+                                        )
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                _getTipForWeek(week),
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                                  height: 1.4,
+                                ),
+                              ),
+                              if (isCurrent) ...[
+                                const SizedBox(height: 12),
+                                const Divider(),
+                                Row(
+                                  children: [
+                                    Icon(Icons.info_outline, size: 14, color: Theme.of(context).colorScheme.tertiary),
+                                    const SizedBox(width: 4),
+                                    Text('Baby is developing taste buds now!', style: Theme.of(context).textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic)),
+                                  ],
+                                ),
+                              ]
+                            ],
                           ),
-                          if (isCurrent) ...[
-                            const SizedBox(height: 12),
-                            const Divider(),
-                            const Row(
-                              children: [
-                                Icon(Icons.info_outline, size: 14, color: Colors.blue),
-                                SizedBox(width: 4),
-                                Text('Baby is developing taste buds now!', style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic)),
-                              ],
-                            ),
-                          ]
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          );
-        },
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

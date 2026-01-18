@@ -30,39 +30,33 @@ class PregnantDashboardPage extends ConsumerWidget {
   Widget _buildHeader(BuildContext context, WidgetRef ref) {
     final userMeta = ref.watch(userMetaProvider);
     final username = userMeta.username;
-    final displayName = (username != null && username.isNotEmpty) ? username : 'Mama';
+    final displayName = (username != null && username.isNotEmpty) ? username : 'Janani'; // "Mother" in Sanskrit
 
     return Padding(
       padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0, bottom: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Hi, $displayName',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
-                ),
-          ),
-          const SizedBox(height: 16),
           Row(
             children: [
-               Icon(Icons.favorite, color: Colors.pink[300], size: 28),
-               const SizedBox(width: 8),
               Text(
-                'Pregnancy Journey',
+                'Namaste, $displayName',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.pink[400],
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
               ),
+              const Spacer(),
+              // Ornamental decorative element if needed
+              Icon(Icons.spa_outlined, color: Theme.of(context).colorScheme.secondary, size: 28),
             ],
           ),
           const SizedBox(height: 8),
           Text(
-            'Track every precious moment.',
+            'Your sacred journey begins here.',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              fontStyle: FontStyle.italic,
             ),
           ),
           const SizedBox(height: 24),
@@ -73,36 +67,70 @@ class PregnantDashboardPage extends ConsumerWidget {
   }
 
   Widget _buildCardContent(BuildContext context, DashboardCardModel card) {
+    final theme = Theme.of(context);
+    // Use theme primary/secondary colors instead of random materials
+    
     switch (card.widgetType) {
       case 'pregnancy_progress':
-        return const SizedBox.shrink(); // Hidden as per user request
+        return const SizedBox.shrink(); 
       case 'daily_summary':
-        return _buildActionCard(context, 'Daily Summary', 'View today\'s logs', Icons.assignment, Colors.blueGrey, () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const DailySummaryPage()));
-        });
+        return _buildActionCard(
+          context, 
+          'Daily Summary', 
+          'View today\'s logs', 
+          Icons.auto_stories, // Book/Scripture icon
+          theme.colorScheme.primary, 
+          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DailySummaryPage()))
+        );
       case 'weekly_stats':
-        return _buildActionCard(context, 'Weekly Insights', 'View charts & trends', Icons.bar_chart, Colors.deepPurpleAccent, () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const WeeklyStatsPage()));
-        });
+        return _buildActionCard(
+          context, 
+          'Weekly Insights', 
+          'View charts & trends', 
+          Icons.insights, 
+          theme.colorScheme.tertiary, // Bronze/Peru
+          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WeeklyStatsPage()))
+        );
       case 'kick_counter':
         return const KickCounterWidget();
       case 'contraction_timer':
         return const ContractionTimerWidget();
       case 'hospital_bag':
-        return _buildActionCard(context, 'Hospital Bag', 'Checklist for delivery day', Icons.luggage, Colors.blue, () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const HospitalBagPage()));
-        });
+        return _buildActionCard(
+          context, 
+          'Hospital Bag', 
+          'Checklist for delivery day', 
+          Icons.local_mall_outlined, 
+          theme.colorScheme.secondary, // Gold
+          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HospitalBagPage()))
+        );
       case 'symptom_tracker':
-        return _buildActionCard(context, 'Symptom Tracker', 'Log "morning" sickness & more', Icons.healing, Colors.green, () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const SymptomTrackerPage()));
-        });
+        return _buildActionCard(
+          context, 
+          'Symptom Tracker', 
+          'Log your well-being', 
+          Icons.healing_outlined, 
+          theme.colorScheme.primary, 
+          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SymptomTrackerPage()))
+        );
        case 'daily_tips':
-        return _buildActionCard(context, 'Daily Tips', 'Eat well, sleep well.', Icons.lightbulb, Colors.orange, () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const DailyTipsPage()));
-        });
+        return _buildActionCard(
+          context, 
+          'Wisdom of the Day', 
+          'Ancient & modern advice', 
+          Icons.lightbulb_outline, 
+          theme.colorScheme.secondary, 
+          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DailyTipsPage()))
+        );
       default:
-        // Fallback
-        return _buildActionCard(context, card.title, 'Widget not implemented', Icons.widgets, Colors.grey, () {});
+        return _buildActionCard(
+            context, 
+            card.title, 
+            'Widget not implemented', 
+            Icons.widgets_outlined, 
+            theme.colorScheme.onSurface.withOpacity(0.5), 
+            () {}
+        );
     }
   }
 
@@ -117,24 +145,59 @@ class PregnantDashboardPage extends ConsumerWidget {
         }
         week = week.clamp(1, 40);
         double progress = (week / 40);
+        
+        final theme = Theme.of(context);
 
         return Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.pink[300]!, Colors.purple[300]!],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                theme.colorScheme.primary,
+                const Color(0xFF5D4037), // Darker earth tone
+              ],
             ),
-            borderRadius: BorderRadius.circular(24),
+            // Beveled corners for the container effectively
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: theme.colorScheme.secondary, width: 1.5),
             boxShadow: [
-              BoxShadow(color: Colors.pink.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5)),
+              BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 4)),
             ],
           ),
           child: Column(
             children: [
-              Text('Week $week', style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)),
-              const Text('Baby is growing every day! 🌟', style: TextStyle(color: Colors.white70)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.child_care, color: theme.colorScheme.secondary, size: 32),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Week $week', 
+                    style: theme.textTheme.displaySmall?.copyWith(
+                      color: theme.colorScheme.secondary, // Gold text
+                      fontWeight: FontWeight.bold
+                    )
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Nurturing life within. 🌟', 
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onPrimary.withOpacity(0.9),
+                  fontStyle: FontStyle.italic,
+                )
+              ),
               const SizedBox(height: 20),
-              LinearProgressIndicator(value: progress, backgroundColor: Colors.white24, color: Colors.white),
+              LinearProgressIndicator(
+                value: progress, 
+                backgroundColor: Colors.black26, 
+                color: theme.colorScheme.secondary, // Gold progress bar
+                minHeight: 8,
+                borderRadius: BorderRadius.circular(4),
+              ),
             ],
           ),
         );
@@ -142,20 +205,60 @@ class PregnantDashboardPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildActionCard(BuildContext context, String title, String subtitle, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildActionCard(BuildContext context, String title, String subtitle, IconData icon, Color iconColor, VoidCallback onTap) {
+    // Rely on the global CardTheme for the shape/color/elevation
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
-          child: Icon(icon, color: color),
-        ),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(subtitle),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
+      child: InkWell(
         onTap: onTap,
+        customBorder: Theme.of(context).cardTheme.shape,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              // Icon Container
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  // Slightly darker/lighter than card background for contrast
+                  color: iconColor.withOpacity(0.1),
+                  border: Border.all(color: iconColor.withOpacity(0.3)),
+                  shape: BoxShape.circle, // Keep circles for icons or make them diamonds? Let's stick to circles for touch targets
+                ),
+                child: Icon(icon, color: iconColor, size: 28),
+              ),
+              const SizedBox(width: 16),
+              // Text Content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title, 
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      )
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Arrow
+              Icon(
+                Icons.arrow_forward_ios, 
+                size: 14, 
+                color: Theme.of(context).colorScheme.tertiary.withOpacity(0.7)
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -61,25 +61,11 @@ class _ResourcesPageState extends ConsumerState<ResourcesPage> {
       ),
       body: Stack(
         children: [
-          // Background: Glassy Gradient for Light, Solid Dark for Dark
+          // Background: Parchment (scaffold background handles this in theme, but ensuring here)
           Container(
-            decoration: BoxDecoration(
-              color: isDarkMode ? Theme.of(context).scaffoldBackgroundColor : null,
-              gradient: isDarkMode 
-                  ? null 
-                  : const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFFF3E5F5), // Light Purple
-                        Color(0xFFE1F5FE), // Light Blue
-                        Color(0xFFFCE4EC), // Light Pink
-                      ],
-                    ),
-            ),
+            color: Theme.of(context).scaffoldBackgroundColor,
           ),
           
-
           CustomScrollView(
             slivers: [
               // Add top padding for status bar + transparency
@@ -145,8 +131,9 @@ class _ResourcesPageState extends ConsumerState<ResourcesPage> {
         icon: const Icon(Icons.auto_awesome),
         label: const Text('Ask AI'),
         heroTag: 'fab_resources',
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF6A1B9A), // Purple accent
+        // Theme handles FAB style, but ensuring high contrast if needed
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         elevation: 4,
       ),
     );

@@ -20,12 +20,18 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
 }
 
 class AppTheme {
-  // Modern Material 3 Palette
-  static const Color primaryColor = Color(0xFF6366F1); // Indigo
-  static const Color secondaryColor = Color(0xFF8B5CF6); // Violet
-  static const Color accentColor = Color(0xFFF43F5E); // Rose
-  static const Color backgroundColor = Color(0xFFF8FAFC); // Slate 50
-  static const Color darkBackgroundColor = Color(0xFF0F172A); // Slate 900
+  // Vedic / Ancient Indian Palette
+  static const Color primaryColor = Color(0xFF800000); // Deep Maroon (Saffron-like depth)
+  static const Color secondaryColor = Color(0xFFDAA520); // Goldenrod / Antique Gold
+  static const Color accentColor = Color(0xFFCD853F); // Peru / Bronze
+  
+  // Parchment Backgrounds
+  static const Color parchmentLight = Color(0xFFF5E6C9); // Warm Parchment
+  static const Color parchmentDark = Color(0xFF3E2723); // Dark Wood / Ancient Scroll
+
+  // Text Colors
+  static const Color textDark = Color(0xFF2D1B0E); // Very dark brown (Ink)
+  static const Color textLight = Color(0xFFF5E6C9); // Parchment color for dark mode text
 
   static ThemeData get lightTheme {
     return _buildTheme(Brightness.light);
@@ -42,92 +48,190 @@ class AppTheme {
       seedColor: primaryColor,
       brightness: brightness,
       primary: primaryColor,
+      onPrimary: Colors.white,
       secondary: secondaryColor,
+      onSecondary: Colors.black,
       tertiary: accentColor,
-      background: isDark ? darkBackgroundColor : backgroundColor,
-      surface: isDark ? const Color(0xFF1E293B) : Colors.white,
+      background: isDark ? parchmentDark : parchmentLight,
+      surface: isDark ? const Color(0xFF4E342E) : const Color(0xFFFFF8E1), // Slightly lighter/darker surface
+      onSurface: isDark ? textLight : textDark,
+      onBackground: isDark ? textLight : textDark,
     );
 
+    // Typography - Ancient Style
+    // Headings: Cinzel (Classic, Roman/Indian looking caps)
+    // Body: Crimson Text (Old style serif, very readable)
     final baseTextTheme = isDark ? ThemeData.dark().textTheme : ThemeData.light().textTheme;
-    final textTheme = GoogleFonts.outfitTextTheme(baseTextTheme).apply(
-      bodyColor: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B),
-      displayColor: isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A),
+    
+    final textTheme = baseTextTheme.copyWith(
+      displayLarge: GoogleFonts.cinzel(
+        fontSize: 32, fontWeight: FontWeight.bold, 
+        color: isDark ? textLight : textDark
+      ),
+      displayMedium: GoogleFonts.cinzel(
+        fontSize: 28, fontWeight: FontWeight.bold,
+        color: isDark ? textLight : textDark
+      ),
+      displaySmall: GoogleFonts.cinzel(
+        fontSize: 24, fontWeight: FontWeight.w600,
+        color: isDark ? textLight : textDark
+      ),
+      headlineLarge: GoogleFonts.cinzel(
+        fontSize: 22, fontWeight: FontWeight.bold,
+        color: isDark ? textLight : textDark
+      ),
+      headlineMedium: GoogleFonts.cinzel(
+        fontSize: 20, fontWeight: FontWeight.w600,
+        color: isDark ? textLight : textDark
+      ),
+      headlineSmall: GoogleFonts.cinzel(
+        fontSize: 18, fontWeight: FontWeight.w500,
+        color: isDark ? textLight : textDark
+      ),
+      titleLarge: GoogleFonts.cinzel(
+        fontSize: 20, fontWeight: FontWeight.bold,
+        color: isDark ? textLight : textDark
+      ),
+      titleMedium: GoogleFonts.crimsonText(
+        fontSize: 18, fontWeight: FontWeight.bold,
+        color: isDark ? textLight : textDark
+      ),
+      titleSmall: GoogleFonts.crimsonText(
+        fontSize: 16, fontWeight: FontWeight.w600,
+        color: isDark ? textLight : textDark
+      ),
+      bodyLarge: GoogleFonts.crimsonText(
+        fontSize: 18,
+        color: isDark ? textLight : textDark
+      ),
+      bodyMedium: GoogleFonts.crimsonText(
+        fontSize: 16,
+        color: isDark ? textLight : textDark
+      ),
+      bodySmall: GoogleFonts.crimsonText(
+        fontSize: 14,
+        color: isDark ? textLight.withOpacity(0.8) : textDark.withOpacity(0.8)
+      ),
+      labelLarge: GoogleFonts.cinzel(
+        fontSize: 14, fontWeight: FontWeight.bold,
+        color: isDark ? textLight : textDark
+      ),
     );
 
     return ThemeData(
       useMaterial3: true,
       brightness: brightness,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: isDark ? darkBackgroundColor : backgroundColor,
+      scaffoldBackgroundColor: isDark ? parchmentDark : parchmentLight,
       textTheme: textTheme,
       
+      // Ancient/Ornate AppBar
       appBarTheme: AppBarTheme(
         elevation: 0,
-        backgroundColor: Colors.transparent,
-        foregroundColor: isDark ? Colors.white : const Color(0xFF0F172A),
+        backgroundColor: Colors.transparent, // Let background show through
+        foregroundColor: isDark ? textLight : primaryColor,
         centerTitle: true,
-        titleTextStyle: textTheme.titleLarge?.copyWith(
+        iconTheme: IconThemeData(color: isDark ? secondaryColor : primaryColor),
+        titleTextStyle: GoogleFonts.cinzel(
+          fontSize: 24,
           fontWeight: FontWeight.bold,
-          fontSize: 22,
+          color: isDark ? textLight : primaryColor,
+          letterSpacing: 1.2,
         ),
       ),
       
-      // cardTheme: CardTheme(
-      //   elevation: 2,
-      //   shadowColor: Colors.black.withOpacity(0.05),
-      //   shape: RoundedRectangleBorder(
-      //     borderRadius: BorderRadius.circular(16),
-      //     side: BorderSide(
-      //       color: isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05),
-      //       width: 1,
-      //     ),
-      //   ),
-      //   color: isDark ? const Color(0xFF1E293B) : Colors.white,
-      // ),
+      // Ornate Cards
+      cardTheme: CardThemeData(
+        elevation: 4,
+        shadowColor: Colors.black.withOpacity(0.3),
+        shape: BeveledRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: secondaryColor.withOpacity(0.5), 
+            width: 1
+          ),
+        ),
+        color: isDark ? const Color(0xFF4E342E) : const Color(0xFFFFF8E1),
+        surfaceTintColor: secondaryColor, // Golden tint on elevation
+      ),
       
-      // dialogTheme: DialogTheme(
-      //   backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
-      //   surfaceTintColor: primaryColor,
-      //   shape: RoundedRectangleBorder(
-      //     borderRadius: BorderRadius.circular(24),
-      //   ),
-      //   titleTextStyle: textTheme.titleLarge?.copyWith(
-      //     fontWeight: FontWeight.bold,
-      //   ),
-      // ),
-      
+      // Golden Buttons
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+          foregroundColor: secondaryColor, // Gold text on Maroon button
+          elevation: 4,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: BeveledRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
           ),
-          textStyle: textTheme.labelLarge?.copyWith(
+          textStyle: GoogleFonts.cinzel(
+            fontSize: 16, 
             fontWeight: FontWeight.bold,
-            letterSpacing: 0.5,
+            letterSpacing: 1.0,
           ),
+          side: const BorderSide(color: secondaryColor, width: 1),
         ),
       ),
       
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: primaryColor,
+          side: const BorderSide(color: primaryColor, width: 1.5),
+          shape: BeveledRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          textStyle: GoogleFonts.cinzel(
+            fontSize: 16, 
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+
+      // Scroll-like Inputs
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.03),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+        fillColor: isDark ? Colors.black.withOpacity(0.2) : Colors.white.withOpacity(0.4),
+        border: UnderlineInputBorder(
+          borderSide: const BorderSide(color: primaryColor),
+          borderRadius: BorderRadius.circular(4),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: primaryColor.withOpacity(0.5)),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: primaryColor, width: 2),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: const BorderSide(color: secondaryColor, width: 2),
         ),
-        labelStyle: TextStyle(color: isDark ? Colors.white70 : Colors.black87),
+        labelStyle: TextStyle(
+          color: isDark ? textLight.withOpacity(0.7) : textDark.withOpacity(0.7),
+          fontFamily: GoogleFonts.crimsonText().fontFamily,
+          fontSize: 18,
+        ),
+        prefixIconColor: primaryColor,
+      ),
+      
+      iconTheme: IconThemeData(
+        color: primaryColor,
+        size: 24,
+      ),
+      
+      // Golden Navigation Bar
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: isDark ? const Color(0xFF2D1B0E) : const Color(0xFFF5E6C9),
+        indicatorColor: secondaryColor.withOpacity(0.4),
+        labelTextStyle: MaterialStateProperty.all(
+          GoogleFonts.cinzel(
+            fontSize: 12, 
+            fontWeight: FontWeight.w600,
+            color: isDark ? textLight : textDark,
+          ),
+        ),
+        iconTheme: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
+            return const IconThemeData(color: primaryColor);
+          }
+          return IconThemeData(color: isDark ? textLight.withOpacity(0.7) : textDark.withOpacity(0.7));
+        }),
       ),
     );
   }

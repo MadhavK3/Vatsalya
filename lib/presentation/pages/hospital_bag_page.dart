@@ -97,23 +97,44 @@ class _HospitalBagPageState extends State<HospitalBagPage> with SingleTickerProv
         controller: _tabController,
         children: _items.keys.map((category) {
           final items = _items[category]!;
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              final item = items[index];
-              return CheckboxListTile(
-                title: Text(item.name),
-                value: item.isDone,
-                activeColor: Theme.of(context).colorScheme.primary,
-                onChanged: (val) {
-                  setState(() {
-                    item.isDone = val ?? false;
-                  });
-                  _saveItems();
-                },
-              );
-            },
+          return Container(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                final item = items[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Card(
+                    elevation: 1,
+                    color: Theme.of(context).cardColor,
+                    shape: Theme.of(context).cardTheme.shape,
+                    child: CheckboxListTile(
+                      title: Text(
+                        item.name,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          decoration: item.isDone ? TextDecoration.lineThrough : null,
+                          color: item.isDone 
+                            ? Theme.of(context).disabledColor 
+                            : Theme.of(context).textTheme.titleMedium?.color
+                        )
+                      ),
+                      value: item.isDone,
+                      activeColor: Theme.of(context).colorScheme.primary,
+                      checkColor: Theme.of(context).colorScheme.onPrimary,
+                      onChanged: (val) {
+                        setState(() {
+                          item.isDone = val ?? false;
+                        });
+                        _saveItems();
+                      },
+                      controlAffinity: ListTileControlAffinity.leading,
+                    ),
+                  ),
+                );
+              },
+            ),
           );
         }).toList(),
       ),

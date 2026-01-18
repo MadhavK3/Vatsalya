@@ -101,33 +101,38 @@ class _TodaySummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Theme.of(context).colorScheme.secondary,
-            Theme.of(context).colorScheme.tertiary,
+    return Card(
+      elevation: 4,
+      shape: Theme.of(context).cardTheme.shape,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).colorScheme.tertiary,
+              Theme.of(context).colorScheme.primary,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _StatColumn(
+              label: 'Total Sleep',
+              value: '${totalHours.toStringAsFixed(1)}h',
+              color: Theme.of(context).colorScheme.onTertiary,
+            ),
+            Container(width: 1, height: 40, color: Theme.of(context).colorScheme.onTertiary.withOpacity(0.3)),
+            _StatColumn(
+              label: 'Sessions',
+              value: '$sessionCount',
+              color: Theme.of(context).colorScheme.onTertiary,
+            ),
           ],
         ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _StatColumn(
-            label: 'Total Sleep',
-            value: '${totalHours.toStringAsFixed(1)}h',
-            color: Colors.white,
-          ),
-          Container(width: 1, height: 40, color: Colors.white.withOpacity(0.3)),
-          _StatColumn(
-            label: 'Sessions',
-            value: '$sessionCount',
-            color: Colors.white,
-          ),
-        ],
       ),
     );
   }
@@ -183,7 +188,7 @@ class _ActiveSleepCard extends ConsumerWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer,
+        color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: Theme.of(context).colorScheme.primary,
@@ -205,6 +210,7 @@ class _ActiveSleepCard extends ConsumerWidget {
                   'Sleep in Progress',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                 ),
                 const SizedBox(height: 4),
@@ -216,7 +222,7 @@ class _ActiveSleepCard extends ConsumerWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.stop_circle),
+            icon: Icon(Icons.stop_circle, color: Theme.of(context).colorScheme.error),
             onPressed: () async {
               final updated = sleep.copyWith(
                 endTime: DateTime.now(),
@@ -243,33 +249,25 @@ class _SleepItemCard extends StatelessWidget {
     final durationText = hours >= 1
         ? '${hours.toStringAsFixed(1)}h'
         : '${(hours * 60).toInt()}m';
+        
+    final theme = Theme.of(context);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+    return Card(
+      elevation: 2,
+      shape: theme.cardTheme.shape,
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         leading: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+            color: theme.colorScheme.tertiary.withOpacity(0.1),
             shape: BoxShape.circle,
           ),
-          child: Icon(Icons.bedtime, color: Theme.of(context).colorScheme.secondary, size: 28),
+          child: Icon(Icons.bedtime, color: theme.colorScheme.tertiary, size: 28),
         ),
         title: Text(
           durationText,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -277,24 +275,24 @@ class _SleepItemCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               'Started at ${DateFormat('hh:mm a').format(sleep.startTime)}',
-              style: TextStyle(color: Colors.grey.shade600),
+              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.6)),
             ),
             if (sleep.endTime != null)
               Text(
                 'Ended at ${DateFormat('hh:mm a').format(sleep.endTime!)}',
-                style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+                style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.6)),
               ),
             if (sleep.notes != null) ...[
               const SizedBox(height: 4),
               Text(
                 sleep.notes!,
-                style: TextStyle(color: Colors.grey.shade500, fontSize: 13, fontStyle: FontStyle.italic),
+                style: theme.textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic),
               ),
             ],
           ],
         ),
         trailing: IconButton(
-          icon: const Icon(Icons.delete_outline, color: Colors.grey),
+          icon: Icon(Icons.delete_outline, color: theme.colorScheme.error.withOpacity(0.6)),
           onPressed: () async {
             try {
               await repo.deleteSleep(sleep.id);

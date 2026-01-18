@@ -168,40 +168,57 @@ class _DiaperSummaryCard extends StatelessWidget {
     final wetCount = diapers.where((d) => d.status == 'Wet' || d.status == 'Both').length;
     final dirtyCount = diapers.where((d) => d.status == 'Dirty' || d.status == 'Both').length;
 
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF6366F1).withOpacity(0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          const Text(
-            'Today\'s Changes',
-            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _StatItem(label: 'Total', value: '${diapers.length}', icon: Icons.history),
-              _StatItem(label: 'Wet', value: '$wetCount', icon: Icons.water_drop),
-              _StatItem(label: 'Dirty', value: '$dirtyCount', icon: Icons.warning_amber),
+    return Card(
+      elevation: 4,
+      shape: Theme.of(context).cardTheme.shape,
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).colorScheme.primary,
+              Theme.of(context).colorScheme.tertiary,
             ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-        ],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Text(
+              'Today\'s Changes',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: Theme.of(context).colorScheme.onPrimary,
+                fontWeight: FontWeight.bold
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _StatItem(
+                  label: 'Total', 
+                  value: '${diapers.length}', 
+                  icon: Icons.history,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+                _StatItem(
+                  label: 'Wet', 
+                  value: '$wetCount', 
+                  icon: Icons.water_drop,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+                _StatItem(
+                  label: 'Dirty', 
+                  value: '$dirtyCount', 
+                  icon: Icons.warning_amber,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -211,17 +228,23 @@ class _StatItem extends StatelessWidget {
   final String label;
   final String value;
   final IconData icon;
+  final Color color;
 
-  const _StatItem({required this.label, required this.value, required this.icon});
+  const _StatItem({required this.label, required this.value, required this.icon, required this.color});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(icon, color: Colors.white.withOpacity(0.8), size: 24),
+        Icon(icon, color: color.withOpacity(0.8), size: 24),
         const SizedBox(height: 8),
-        Text(value, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-        Text(label, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12)),
+        Text(value, style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+          color: color, 
+          fontWeight: FontWeight.bold
+        )),
+        Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: color.withOpacity(0.7)
+        )),
       ],
     );
   }
@@ -237,38 +260,29 @@ class _DiaperItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     Color statusColor;
     IconData statusIcon;
+    final theme = Theme.of(context);
 
     switch (diaper.status) {
       case 'Wet':
-        statusColor = Colors.blue;
-        statusIcon = Icons.water_drop;
+        statusColor = theme.colorScheme.primary;
+        statusIcon = Icons.water_drop_outlined;
         break;
       case 'Dirty':
-        statusColor = Colors.brown;
-        statusIcon = Icons.warning_amber;
-        break;
-      case 'Both':
-        statusColor = Colors.orange;
+        statusColor = theme.colorScheme.tertiary;
         statusIcon = Icons.warning_amber_rounded;
         break;
-      default:
-        statusColor = Colors.grey;
+      case 'Both':
+        statusColor = theme.colorScheme.secondary;
         statusIcon = Icons.layers;
+        break;
+      default:
+        statusColor = theme.colorScheme.onSurface;
+        statusIcon = Icons.help_outline;
     }
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+    return Card(
+      elevation: 2,
+      shape: theme.cardTheme.shape,
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         leading: Container(
@@ -281,7 +295,7 @@ class _DiaperItemCard extends StatelessWidget {
         ),
         title: Text(
           diaper.status,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -289,19 +303,19 @@ class _DiaperItemCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               DateFormat('hh:mm a').format(diaper.timestamp),
-              style: TextStyle(color: Colors.grey.shade600),
+              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.6)),
             ),
             if (diaper.notes != null) ...[
               const SizedBox(height: 4),
               Text(
                 diaper.notes!,
-                style: TextStyle(color: Colors.grey.shade500, fontSize: 13, fontStyle: FontStyle.italic),
+                style: theme.textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic),
               ),
             ],
           ],
         ),
         trailing: IconButton(
-          icon: const Icon(Icons.delete_outline, color: Colors.grey),
+          icon: Icon(Icons.delete_outline, color: theme.colorScheme.error.withOpacity(0.6)),
           onPressed: () async {
             final confirm = await showDialog<bool>(
               context: context,

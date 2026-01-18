@@ -38,32 +38,25 @@ class ToddlerDashboardPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Hi, $displayName',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
-                ),
-          ),
-          const SizedBox(height: 16),
           Row(
             children: [
-               Icon(Icons.child_care, color: Colors.orange[400], size: 28),
-               const SizedBox(width: 8),
               Text(
-                'Parenting Hub',
+                'Namaste, $displayName',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.orange[700],
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
               ),
+              const Spacer(),
+              Icon(Icons.family_restroom, color: Theme.of(context).colorScheme.secondary, size: 28),
             ],
           ),
           const SizedBox(height: 8),
           Text(
-            'Keep up with your little explorer.',
+            'Nurturing the future.',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              fontStyle: FontStyle.italic,
             ),
           ),
         ],
@@ -72,59 +65,107 @@ class ToddlerDashboardPage extends ConsumerWidget {
   }
 
   Widget _buildCardContent(BuildContext context, DashboardCardModel card) {
+    final theme = Theme.of(context);
+    
     switch (card.widgetType) {
       case 'tracker_hub':
         return _buildTrackerHub(context);
       case 'milestones':
         return const MilestoneTrackerWidget();
       case 'vaccinations':
-        return _buildActionCard(context, 'Vaccinations', 'Upcoming shots', Icons.vaccines, Colors.red, () {
-           Navigator.push(context, MaterialPageRoute(builder: (_) => const VaccinationPage()));
-        });
+        return _buildActionCard(
+          context, 
+          'Vaccinations', 
+          'Upcoming shots', 
+          Icons.vaccines, 
+          theme.colorScheme.tertiary, // Bronze vs Red
+          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VaccinationPage()))
+        );
       case 'growth_chart':
-        return _buildActionCard(context, 'Growth Tracker', 'Height & Weight', Icons.show_chart, Colors.purple, () {
-           Navigator.push(context, MaterialPageRoute(builder: (_) => const GrowthTrackingPage()));
-        });
+        return _buildActionCard(
+          context, 
+          'Growth Tracker', 
+          'Height & Weight', 
+          Icons.show_chart, 
+          theme.colorScheme.primary, 
+          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GrowthTrackingPage()))
+        );
       case 'daily_summary':
-        return _buildActionCard(context, 'Daily Summary', 'View today\'s logs', Icons.assignment, Colors.blueGrey, () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const DailySummaryPage()));
-        });
+        return _buildActionCard(
+          context, 
+          'Daily Summary', 
+          'View today\'s logs', 
+          Icons.auto_stories, 
+          theme.colorScheme.primary, 
+          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DailySummaryPage()))
+        );
       case 'weekly_stats':
-        return _buildActionCard(context, 'Weekly Insights', 'View charts & trends', Icons.bar_chart, Colors.deepPurpleAccent, () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const WeeklyStatsPage()));
-        });
+        return _buildActionCard(
+          context, 
+          'Weekly Insights', 
+          'View charts & trends', 
+          Icons.insights, 
+          theme.colorScheme.tertiary, 
+          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WeeklyStatsPage()))
+        );
       case 'activity_suggestions':
-        return _buildActionCard(context, 'Activity Ideas', 'Age-appropriate play', Icons.toys, Colors.green, () {
-           Navigator.push(context, MaterialPageRoute(builder: (_) => const ActivityIdeasPage()));
-        });
+        return _buildActionCard(
+          context, 
+          'Activity Ideas', 
+          'Age-appropriate play', 
+          Icons.toys_outlined, 
+          theme.colorScheme.secondary, 
+          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ActivityIdeasPage()))
+        );
       case 'daily_tips':
-        return _buildActionCard(context, 'Parenting Tip', 'Toddlers love routine.', Icons.lightbulb, Colors.amber, null);
+        return _buildActionCard(
+          context, 
+          'Parenting Wisdom', 
+          'Ancient knowledge', 
+          Icons.lightbulb_outline, 
+          theme.colorScheme.secondary, 
+          null
+        );
       default:
-        return _buildActionCard(context, card.title, '', Icons.widgets, Colors.grey, null);
+        return _buildActionCard(context, card.title, '', Icons.widgets_outlined, theme.colorScheme.onSurface, null);
     }
   }
 
   Widget _buildTrackerHub(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return Column(
       children: [
         Row(
           children: [
             Expanded(
-              child: _buildMiniTracker(context, 'Feeding', Icons.restaurant, Colors.orange, () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const FeedingTrackingPage()));
-              }),
+              child: _buildMiniTracker(
+                context, 
+                'Feeding', 
+                Icons.restaurant_menu, 
+                theme.colorScheme.primary, 
+                () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FeedingTrackingPage()))
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: _buildMiniTracker(context, 'Sleep', Icons.bedtime, Colors.indigo, () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const SleepTrackingPage()));
-              }),
+              child: _buildMiniTracker(
+                context, 
+                'Sleep', 
+                Icons.bedtime_outlined, 
+                theme.colorScheme.tertiary, 
+                () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SleepTrackingPage()))
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: _buildMiniTracker(context, 'Diaper', Icons.layers, Colors.teal, () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const DiaperTrackingPage()));
-              }),
+              child: _buildMiniTracker(
+                context, 
+                'Diaper', 
+                Icons.layers_outlined, 
+                theme.colorScheme.secondary, 
+                () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DiaperTrackingPage()))
+              ),
             ),
           ],
         ),
@@ -141,7 +182,7 @@ class ToddlerDashboardPage extends ConsumerWidget {
         decoration: BoxDecoration(
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withOpacity(0.2)),
+          border: Border.all(color: color.withOpacity(0.3)),
         ),
         child: Column(
           children: [
@@ -156,18 +197,55 @@ class ToddlerDashboardPage extends ConsumerWidget {
 
   Widget _buildActionCard(BuildContext context, String title, String subtitle, IconData icon, Color color, VoidCallback? onTap) {
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
-          child: Icon(icon, color: color),
-        ),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: subtitle.isNotEmpty ? Text(subtitle) : null,
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
+      child: InkWell(
         onTap: onTap,
+        customBorder: Theme.of(context).cardTheme.shape,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  border: Border.all(color: color.withOpacity(0.3)),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: color, size: 28),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title, 
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold
+                      )
+                    ),
+                    if (subtitle.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle, 
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)
+                        )
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios, 
+                size: 14,
+                color: Theme.of(context).colorScheme.tertiary.withOpacity(0.7)
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

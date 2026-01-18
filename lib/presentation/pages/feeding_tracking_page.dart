@@ -151,33 +151,38 @@ class _TodaySummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final totalQuantity = feedings.fold(0.0, (sum, f) => sum + f.quantity);
 
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Theme.of(context).colorScheme.primary,
-            Theme.of(context).colorScheme.secondary,
+    return Card(
+      elevation: 4,
+      shape: Theme.of(context).cardTheme.shape,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+              colors: [
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.tertiary,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _StatColumn(
+              label: 'Total',
+              value: '${totalQuantity.toStringAsFixed(0)}ml',
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
+            Container(width: 1, height: 40, color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.3)),
+            _StatColumn(
+              label: 'Sessions',
+              value: '${feedings.length}',
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
           ],
         ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _StatColumn(
-            label: 'Total',
-            value: '${totalQuantity.toStringAsFixed(0)}ml',
-            color: Colors.white,
-          ),
-          Container(width: 1, height: 40, color: Colors.white.withOpacity(0.3)),
-          _StatColumn(
-            label: 'Sessions',
-            value: '${feedings.length}',
-            color: Colors.white,
-          ),
-        ],
       ),
     );
   }
@@ -227,38 +232,29 @@ class _FeedingItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     IconData feedingIcon;
     Color feedingColor;
+    final theme = Theme.of(context);
 
     switch (feeding.type) {
       case 'Breastfeeding':
-        feedingIcon = Icons.favorite;
-        feedingColor = Colors.pink;
+        feedingIcon = Icons.favorite_border;
+        feedingColor = theme.colorScheme.primary;
         break;
       case 'Formula':
-        feedingIcon = Icons.water_drop;
-        feedingColor = Colors.blue;
+        feedingIcon = Icons.water_drop_outlined;
+        feedingColor = theme.colorScheme.tertiary; // More distinct
         break;
       case 'Solid Food':
-        feedingIcon = Icons.restaurant;
-        feedingColor = Colors.orange;
+        feedingIcon = Icons.restaurant_menu;
+        feedingColor = theme.colorScheme.secondary;
         break;
       default:
         feedingIcon = Icons.lunch_dining;
-        feedingColor = Colors.green;
+        feedingColor = theme.colorScheme.onSurface;
     }
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+    return Card(
+      elevation: 2,
+      shape: theme.cardTheme.shape,
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         leading: Container(
@@ -271,7 +267,7 @@ class _FeedingItemCard extends StatelessWidget {
         ),
         title: Text(
           feeding.type,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -279,19 +275,19 @@ class _FeedingItemCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               '${feeding.quantity}${feeding.unit} • ${DateFormat('hh:mm a').format(feeding.timestamp)}',
-              style: TextStyle(color: Colors.grey.shade600),
+              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.6)),
             ),
             if (feeding.notes != null) ...[
               const SizedBox(height: 4),
               Text(
                 feeding.notes!,
-                style: TextStyle(color: Colors.grey.shade500, fontSize: 13, fontStyle: FontStyle.italic),
+                style: theme.textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic),
               ),
             ],
           ],
         ),
         trailing: IconButton(
-          icon: const Icon(Icons.delete_outline, color: Colors.grey),
+          icon: Icon(Icons.delete_outline, color: theme.colorScheme.error.withOpacity(0.6)),
           onPressed: () async {
             try {
               await repo.deleteFeeding(feeding.id);

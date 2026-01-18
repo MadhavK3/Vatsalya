@@ -10,10 +10,11 @@ class MilestoneTrackerWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final milestoneRepo = ref.watch(milestoneRepositoryProvider);
+    final theme = Theme.of(context);
 
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: theme.cardTheme.shape,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -27,15 +28,15 @@ class MilestoneTrackerWidget extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.amber.withOpacity(0.1),
+                        color: theme.colorScheme.secondary.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.star_rounded, color: Colors.amber),
+                      child: Icon(Icons.star_rounded, color: theme.colorScheme.secondary),
                     ),
                     const SizedBox(width: 12),
                     Text(
                       'Milestones',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -45,7 +46,7 @@ class MilestoneTrackerWidget extends ConsumerWidget {
                   onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const MilestonesPage()));
                   },
-                  child: const Text('See All'),
+                  child: Text('See All', style: TextStyle(color: theme.colorScheme.primary)),
                 ),
               ],
             ),
@@ -79,8 +80,8 @@ class MilestoneTrackerWidget extends ConsumerWidget {
                     const SizedBox(height: 8),
                     LinearProgressIndicator(
                       value: progress,
-                      color: Colors.amber,
-                      backgroundColor: Colors.amber.withOpacity(0.1),
+                      color: theme.colorScheme.secondary,
+                      backgroundColor: theme.colorScheme.secondary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     const SizedBox(height: 16),
@@ -90,8 +91,6 @@ class MilestoneTrackerWidget extends ConsumerWidget {
                          // Update repo
                          repo.toggleCompletion(m.id, val!);
                          // Force UI update
-                         // In a real app we'd use streams, but here we trigger refresh
-                         // Note: This refreshes the *provider*, so any other watchers (like MilestonesPage) update too.
                          ref.refresh(milestoneRepositoryProvider);
                       },
                     )),
@@ -135,7 +134,8 @@ class _MilestoneCheckbox extends StatelessWidget {
       dense: true,
       contentPadding: EdgeInsets.zero,
       controlAffinity: ListTileControlAffinity.leading,
-      activeColor: Colors.amber,
+      activeColor: Theme.of(context).colorScheme.secondary,
+      checkColor: Theme.of(context).colorScheme.onSecondary,
     );
   }
 }

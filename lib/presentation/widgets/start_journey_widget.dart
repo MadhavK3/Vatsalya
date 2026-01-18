@@ -33,7 +33,7 @@ class StartJourneyWidget extends ConsumerWidget {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: Colors.pink.withOpacity(0.3),
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -52,7 +52,10 @@ class StartJourneyWidget extends ConsumerWidget {
                   return Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Colors.pink[300]!, Colors.purple[300]!],
+                        colors: [
+                          Theme.of(context).colorScheme.primary, // Maroon
+                          const Color(0xFF5D4037), // Dark Wood
+                        ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
