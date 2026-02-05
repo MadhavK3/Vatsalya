@@ -110,8 +110,8 @@ graph TD
 
 ### 2. Fork & Clone
 ```bash
-git clone https://github.com/MadhavK3/HM022_TheHustlers.git
-cd HM022_TheHustlers
+git clone https://github.com/MadhavK3/Vatsalya.git
+cd Vatsalya
 ```
 
 ### 3. Dependency & Code Generation
@@ -162,5 +162,5 @@ GEMINI_API_KEY=your-google-ai-studio-key
 
 ---
 
-**Developed with ❤️ by The Hustlers**  
+**Developed with ❤️ by Vatsalya Team**  
 *Maternal & Infant health is a human right. Vatsalya aims to make it organized.*
