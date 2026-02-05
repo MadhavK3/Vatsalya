@@ -162,5 +162,5 @@ GEMINI_API_KEY=your-google-ai-studio-key
 
 ---
 
-**Developed with ❤️ by Om Bharambe**  
+**Developed with ❤️ by The Hustlers**  
 *Maternal & Infant health is a human right. Vatsalya aims to make it organized.*
