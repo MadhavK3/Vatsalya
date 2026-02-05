@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:maternal_infant_care/data/models/dashboard_card_model.dart';
 import 'package:maternal_infant_care/presentation/widgets/customizable_dashboard.dart';
 import 'package:maternal_infant_care/presentation/widgets/milestone_tracker_widget.dart';
+import 'package:maternal_infant_care/presentation/widgets/iot_status_widget.dart';
 
 // Import existing pages for navigation
 import 'package:maternal_infant_care/presentation/pages/feeding_tracking_page.dart';
@@ -11,6 +12,7 @@ import 'package:maternal_infant_care/presentation/pages/diaper_tracking_page.dar
 import 'package:maternal_infant_care/presentation/pages/vaccination_page.dart';
 import 'package:maternal_infant_care/presentation/pages/growth_tracking_page.dart';
 import 'package:maternal_infant_care/presentation/pages/activity_ideas_page.dart';
+import 'package:maternal_infant_care/presentation/pages/parenting_wisdom_page.dart';
 import 'package:maternal_infant_care/presentation/pages/daily_summary_page.dart';
 import 'package:maternal_infant_care/presentation/pages/weekly_stats_page.dart';
 import 'package:maternal_infant_care/presentation/viewmodels/user_meta_provider.dart';
@@ -124,8 +126,10 @@ class ToddlerDashboardPage extends ConsumerWidget {
           'Ancient knowledge', 
           Icons.lightbulb_outline, 
           theme.colorScheme.secondary, 
-          null
+          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ParentingWisdomPage()))
         );
+      case 'iot_devices':
+        return const IoTStatusWidget();
       default:
         return _buildActionCard(context, card.title, '', Icons.widgets_outlined, theme.colorScheme.onSurface, null);
     }

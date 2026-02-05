@@ -10,8 +10,8 @@ import 'package:maternal_infant_care/presentation/pages/daily_tips_page.dart';
 import 'package:maternal_infant_care/presentation/viewmodels/user_meta_provider.dart';
 import 'package:maternal_infant_care/presentation/widgets/start_journey_widget.dart';
 
-import 'package:maternal_infant_care/presentation/pages/daily_summary_page.dart';
-import 'package:maternal_infant_care/presentation/pages/weekly_stats_page.dart';
+import 'package:maternal_infant_care/presentation/pages/pregnancy_daily_summary_page.dart';
+import 'package:maternal_infant_care/presentation/pages/pregnancy_weekly_stats_page.dart';
 
 // Reuse existing widgets where possible or create simple ones
 class PregnantDashboardPage extends ConsumerWidget {
@@ -80,7 +80,7 @@ class PregnantDashboardPage extends ConsumerWidget {
           'View today\'s logs', 
           Icons.auto_stories, // Book/Scripture icon
           theme.colorScheme.primary, 
-          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DailySummaryPage()))
+          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PregnancyDailySummaryPage()))
         );
       case 'weekly_stats':
         return _buildActionCard(
@@ -89,7 +89,7 @@ class PregnantDashboardPage extends ConsumerWidget {
           'View charts & trends', 
           Icons.insights, 
           theme.colorScheme.tertiary, // Bronze/Peru
-          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WeeklyStatsPage()))
+          () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PregnancyWeeklyStatsPage()))
         );
       case 'kick_counter':
         return const KickCounterWidget();

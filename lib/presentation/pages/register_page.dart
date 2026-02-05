@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:maternal_infant_care/presentation/viewmodels/auth_provider.dart';
 import 'package:maternal_infant_care/presentation/viewmodels/user_provider.dart';
-import 'package:maternal_infant_care/presentation/pages/dashboard_page.dart';
+
 import 'package:maternal_infant_care/presentation/pages/pregnancy_setup_page.dart';
 import 'package:maternal_infant_care/presentation/pages/main_navigation_shell.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -56,7 +56,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     });
 
     try {
-      final response = await ref.read(authServiceProvider).signUp(
+      await ref.read(authServiceProvider).signUp(
         email: email,
         password: password,
         data: {
@@ -113,7 +113,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: const Text('Create Account'),
         backgroundColor: Colors.transparent,
@@ -183,7 +183,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(

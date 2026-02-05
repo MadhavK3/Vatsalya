@@ -6,12 +6,16 @@ class SmartReminderCard extends StatelessWidget {
   final ReminderModel reminder;
   final VoidCallback onDismiss;
   final VoidCallback onComplete;
+  final String actionLabel;
+  final IconData actionIcon;
 
   const SmartReminderCard({
     super.key,
     required this.reminder,
     required this.onDismiss,
     required this.onComplete,
+    this.actionLabel = 'Done',
+    this.actionIcon = Icons.check,
   });
 
   @override
@@ -138,8 +142,8 @@ class SmartReminderCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   FilledButton.icon(
                     onPressed: onComplete,
-                    icon: const Icon(Icons.check, size: 16),
-                    label: const Text('Done'),
+                    icon: Icon(actionIcon, size: 16),
+                    label: Text(actionLabel),
                     style: FilledButton.styleFrom(
                        visualDensity: VisualDensity.compact,
                     ),

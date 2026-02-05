@@ -14,6 +14,9 @@ class AppConstants {
   static const String contractionBox = 'contraction';
   static const String milestoneBox = 'milestone';
   static const String chatHistoryBox = 'chat_history';
+  static const String iotDevicesBox = 'iot_devices';
+  static const String iotAlertsBox = 'iot_alerts';
+  static const String iotReadingsBox = 'iot_readings';
   
   static const int maxNotificationId = 999999;
   

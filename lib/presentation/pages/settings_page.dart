@@ -3,8 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:maternal_infant_care/presentation/viewmodels/auth_provider.dart';
 import 'package:maternal_infant_care/presentation/viewmodels/user_meta_provider.dart';
 import 'package:maternal_infant_care/presentation/viewmodels/user_provider.dart';
+import 'package:maternal_infant_care/presentation/viewmodels/language_provider.dart';
+import 'package:maternal_infant_care/core/services/translation_service.dart';
 import 'package:maternal_infant_care/core/utils/notification_service.dart';
 import 'package:intl/intl.dart';
+import 'package:maternal_infant_care/presentation/widgets/translatable_text.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -89,6 +92,49 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         if (mounted) setState(() => _isLoading = false);
       }
     }
+  }
+
+  Future<void> _showLanguageDialog() async {
+    final currentLang = ref.read(languageProvider);
+    
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select Language'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: AppLanguage.supportedLanguages.length,
+            itemBuilder: (context, index) {
+              final lang = AppLanguage.supportedLanguages[index];
+              final isSelected = lang.code == currentLang;
+              
+              return ListTile(
+                title: Text(lang.nativeName),
+                subtitle: Text(lang.name),
+                trailing: isSelected 
+                    ? Icon(Icons.check_circle, color: Theme.of(context).colorScheme.primary)
+                    : null,
+                onTap: () {
+                  ref.read(languageProvider.notifier).setLanguage(lang.code);
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Language changed to ${lang.nativeName}')),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _showChangePasswordDialog() async {
@@ -202,7 +248,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: 'Settings'.tr(),
       ),
       body: ListView(
         padding: const EdgeInsets.all(24),
@@ -225,8 +271,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           _buildSectionHeader('Security'),
           const SizedBox(height: 16),
           ListTile(
-            title: const Text('Change Password'),
-            subtitle: const Text('Update your account password'),
+            title: 'Change Password'.tr(),
+            subtitle: 'Update your account password'.tr(),
             leading: Icon(Icons.lock_outline, color: Theme.of(context).colorScheme.primary),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: _showChangePasswordDialog,
@@ -234,10 +280,28 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           const SizedBox(height: 32),
+          _buildSectionHeader('Language'),
+          const SizedBox(height: 16),
+          Consumer(
+            builder: (context, ref, _) {
+              final langCode = ref.watch(languageProvider);
+              final lang = AppLanguage.getByCode(langCode);
+              return ListTile(
+                title: Text(lang.nativeName),
+                subtitle: Text('${lang.name} - Tap to change'),
+                leading: Icon(Icons.language, color: Theme.of(context).colorScheme.primary),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: _showLanguageDialog,
+                tileColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              );
+            },
+          ),
+          const SizedBox(height: 32),
           _buildSectionHeader('My Journey'),
           const SizedBox(height: 16),
           ListTile(
-            title: Text(isPregnancy ? 'Last Period Date' : 'Baby Birthday'),
+            title: (isPregnancy ? 'Last Period Date' : 'Baby Birthday').tr(),
             subtitle: Text(userMeta.startDate != null ? DateFormat('MMMM dd, yyyy').format(userMeta.startDate!) : 'Not set'),
             leading: Icon(isPregnancy ? Icons.pregnant_woman : Icons.child_care, color: Theme.of(context).colorScheme.primary),
             trailing: const Icon(Icons.edit_outlined, size: 20),
@@ -283,8 +347,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   }
 
   Widget _buildSectionHeader(String title) {
-    return Text(
-      title,
+    return title.tr(
       style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: Theme.of(context).colorScheme.primary,
@@ -294,7 +357,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   Widget _buildNotificationToggle(String title, bool value, ValueChanged<bool> onChanged) {
     return SwitchListTile(
-      title: Text(title),
+      title: title.tr(),
       value: value,
       onChanged: _isLoading ? null : onChanged,
       dense: true,

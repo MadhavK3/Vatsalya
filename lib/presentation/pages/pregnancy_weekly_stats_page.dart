@@ -3,16 +3,38 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:maternal_infant_care/presentation/viewmodels/repository_providers.dart';
+import 'package:maternal_infant_care/data/models/kick_log_model.dart';
+import 'package:maternal_infant_care/data/models/contraction_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
-class WeeklyStatsPage extends ConsumerStatefulWidget {
-  const WeeklyStatsPage({super.key});
+class PregnancyWeeklyStatsPage extends ConsumerStatefulWidget {
+  const PregnancyWeeklyStatsPage({super.key});
 
   @override
-  ConsumerState<WeeklyStatsPage> createState() => _WeeklyStatsPageState();
+  ConsumerState<PregnancyWeeklyStatsPage> createState() => _PregnancyWeeklyStatsPageState();
 }
 
-class _WeeklyStatsPageState extends ConsumerState<WeeklyStatsPage> {
+class _PregnancyWeeklyStatsPageState extends ConsumerState<PregnancyWeeklyStatsPage> {
   DateTime _weekStart = DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1));
+  List<Map<String, dynamic>> _symptomLogs = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSymptomLogs();
+  }
+
+  Future<void> _loadSymptomLogs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? savedData = prefs.getString('symptom_logs');
+    if (savedData != null) {
+      final List<dynamic> decoded = jsonDecode(savedData);
+      setState(() {
+        _symptomLogs = decoded.map((e) => Map<String, dynamic>.from(e)).toList();
+      });
+    }
+  }
 
   void _changeWeek(int weeks) {
     setState(() {
@@ -20,11 +42,59 @@ class _WeeklyStatsPageState extends ConsumerState<WeeklyStatsPage> {
     });
   }
 
+  List<double> _getKickData(dynamic repo, DateTime start) {
+    List<double> data = [];
+    final kickLogs = repo.getHistory() as List<KickLogModel>;
+    
+    for (int i = 0; i < 7; i++) {
+      final date = start.add(Duration(days: i));
+      final dayKicks = kickLogs.where((k) =>
+        k.sessionStart.year == date.year &&
+        k.sessionStart.month == date.month &&
+        k.sessionStart.day == date.day
+      ).toList();
+      final total = dayKicks.fold(0, (sum, k) => sum + k.kickCount);
+      data.add(total.toDouble());
+    }
+    return data;
+  }
+
+  List<double> _getContractionData(dynamic repo, DateTime start) {
+    List<double> data = [];
+    final contractions = repo.getContractions() as List<ContractionModel>;
+    
+    for (int i = 0; i < 7; i++) {
+      final date = start.add(Duration(days: i));
+      final dayContractions = contractions.where((c) =>
+        c.startTime.year == date.year &&
+        c.startTime.month == date.month &&
+        c.startTime.day == date.day
+      ).length;
+      data.add(dayContractions.toDouble());
+    }
+    return data;
+  }
+
+  List<double> _getSymptomData(DateTime start) {
+    List<double> data = [];
+    
+    for (int i = 0; i < 7; i++) {
+      final date = start.add(Duration(days: i));
+      final daySymptoms = _symptomLogs.where((s) {
+        final logDate = DateTime.parse(s['timestamp']);
+        return logDate.year == date.year &&
+               logDate.month == date.month &&
+               logDate.day == date.day;
+      }).length;
+      data.add(daySymptoms.toDouble());
+    }
+    return data;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final feedingRepo = ref.watch(feedingRepositoryProvider);
-    final sleepRepo = ref.watch(sleepRepositoryProvider);
-    final diaperRepo = ref.watch(diaperRepositoryProvider);
+    final kickLogRepo = ref.watch(kickLogRepositoryProvider);
+    final contractionRepo = ref.watch(contractionRepositoryProvider);
 
     final weekEnd = _weekStart.add(const Duration(days: 6));
     final dateRangeText = '${DateFormat('MMM d').format(_weekStart)} - ${DateFormat('MMM d, y').format(weekEnd)}';
@@ -86,37 +156,36 @@ class _WeeklyStatsPageState extends ConsumerState<WeeklyStatsPage> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    feedingRepo.when(
+                    kickLogRepo.when(
                       data: (repo) => _buildChartCard(
-                        'Feeding (ml)',
-                        theme.colorScheme.primary, // Maroon
-                        _getFeedingData(repo, _weekStart),
+                        'Baby Kicks',
+                        Icons.child_care,
+                        theme.colorScheme.primary,
+                        _getKickData(repo, _weekStart),
                         theme,
                       ),
                       loading: () => const _LoadingChart(),
                       error: (_, __) => const SizedBox.shrink(),
                     ),
                     const SizedBox(height: 16),
-                    sleepRepo.when(
+                    contractionRepo.when(
                       data: (repo) => _buildChartCard(
-                        'Sleep (hours)',
-                        theme.colorScheme.secondary, // Goldenrod
-                        _getSleepData(repo, _weekStart),
+                        'Contractions',
+                        Icons.timer,
+                        theme.colorScheme.tertiary,
+                        _getContractionData(repo, _weekStart),
                         theme,
                       ),
                       loading: () => const _LoadingChart(),
                       error: (_, __) => const SizedBox.shrink(),
                     ),
                     const SizedBox(height: 16),
-                    diaperRepo.when(
-                      data: (repo) => _buildChartCard(
-                        'Diapers',
-                        theme.colorScheme.tertiary, // Bronze
-                        _getDiaperData(repo, _weekStart),
-                        theme,
-                      ),
-                      loading: () => const _LoadingChart(),
-                      error: (_, __) => const SizedBox.shrink(),
+                    _buildChartCard(
+                      'Symptoms Logged',
+                      Icons.healing,
+                      theme.colorScheme.secondary,
+                      _getSymptomData(_weekStart),
+                      theme,
                     ),
                   ],
                 ),
@@ -128,37 +197,8 @@ class _WeeklyStatsPageState extends ConsumerState<WeeklyStatsPage> {
     );
   }
 
-  List<double> _getFeedingData(dynamic repo, DateTime start) {
-    List<double> data = [];
-    for (int i = 0; i < 7; i++) {
-      final date = start.add(Duration(days: i));
-      final feedings = repo.getFeedingsByDate(date);
-      final total = feedings.fold(0.0, (sum, item) => sum + (item.quantity as double));
-      data.add(total);
-    }
-    return data;
-  }
-
-  List<double> _getSleepData(dynamic repo, DateTime start) {
-    List<double> data = [];
-    for (int i = 0; i < 7; i++) {
-        final date = start.add(Duration(days: i));
-        data.add(repo.getTotalSleepHoursByDate(date));
-    }
-    return data;
-  }
-
-  List<double> _getDiaperData(dynamic repo, DateTime start) {
-    List<double> data = [];
-    for (int i = 0; i < 7; i++) {
-        final date = start.add(Duration(days: i));
-        data.add(repo.getDiapersByDate(date).length.toDouble());
-    }
-    return data;
-  }
-
-  Widget _buildChartCard(String title, Color color, List<double> weeklyData, ThemeData theme) {
-    final maxY = weeklyData.reduce((curr, next) => curr > next ? curr : next);
+  Widget _buildChartCard(String title, IconData icon, Color color, List<double> weeklyData, ThemeData theme) {
+    final maxY = weeklyData.isEmpty ? 10.0 : weeklyData.reduce((curr, next) => curr > next ? curr : next);
     // Add some buffer to top of chart
     final targetY = maxY == 0 ? 10.0 : maxY * 1.2;
 
@@ -167,7 +207,7 @@ class _WeeklyStatsPageState extends ConsumerState<WeeklyStatsPage> {
       decoration: BoxDecoration(
         color: theme.cardTheme.color,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: theme.colorScheme.secondary.withOpacity(0.3)), // Golden border
+        border: Border.all(color: theme.colorScheme.secondary.withOpacity(0.3)),
         boxShadow: [
           BoxShadow(
             color: color.withOpacity(0.1),
@@ -187,7 +227,7 @@ class _WeeklyStatsPageState extends ConsumerState<WeeklyStatsPage> {
                   color: color.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.bar_chart, color: color, size: 18),
+                child: Icon(icon, color: color, size: 18),
               ),
               const SizedBox(width: 8),
               Text(
@@ -214,7 +254,7 @@ class _WeeklyStatsPageState extends ConsumerState<WeeklyStatsPage> {
                     tooltipMargin: 8,
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                       return BarTooltipItem(
-                        rod.toY.toStringAsFixed(1),
+                        rod.toY.toStringAsFixed(0),
                         TextStyle(
                           color: theme.colorScheme.onSurfaceVariant,
                           fontWeight: FontWeight.bold,

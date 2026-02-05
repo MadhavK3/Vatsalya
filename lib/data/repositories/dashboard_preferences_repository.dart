@@ -69,6 +69,7 @@ class DashboardPreferencesRepository {
         DashboardCardModel(id: '${prefix}growth', title: 'Growth Chart', widgetType: 'growth_chart', order: 5),
         DashboardCardModel(id: '${prefix}activity', title: 'Activity Ideas', widgetType: 'activity_suggestions', order: 6),
         DashboardCardModel(id: '${prefix}tips', title: 'Parenting Tips', widgetType: 'daily_tips', order: 7),
+        DashboardCardModel(id: '${prefix}iot', title: 'Smart Devices', widgetType: 'iot_devices', order: 8),
       ];
     }
 

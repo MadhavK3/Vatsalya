@@ -10,6 +10,7 @@ import 'package:maternal_infant_care/presentation/pages/disease_awareness_page.d
 import 'package:maternal_infant_care/presentation/pages/nutrition_guidance_page.dart';
 import 'package:maternal_infant_care/presentation/pages/daily_tips_page.dart';
 import 'package:maternal_infant_care/presentation/pages/hospital_bag_page.dart';
+import 'package:maternal_infant_care/presentation/pages/parenting_wisdom_page.dart';
 
 class ResourcesPage extends ConsumerStatefulWidget {
   const ResourcesPage({super.key});
@@ -139,59 +140,54 @@ class _ResourcesPageState extends ConsumerState<ResourcesPage> {
 
   Widget _buildSearchAndFilters(BuildContext context) {
     const textColor = Color(0xFF2D3142);
+    const accentColor = Color(0xFF8B4A62);
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Greeting / Hero Section
+          // Hero Section - Centered
           Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: Text(
-              'Discover Helpful\nInsights & Guides ✨',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: textColor,
-                  ),
-            ),
-          ),
-          
-          // Search Bar
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.7),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
+            padding: const EdgeInsets.only(bottom: 24.0),
+            child: Column(
+              children: [
+                Text(
+                  'Discover Helpful',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: textColor,
+                        letterSpacing: 0.5,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Insights & Guides ✨',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: textColor,
+                        letterSpacing: 0.5,
+                      ),
                 ),
               ],
             ),
-            child: TextField(
-              onChanged: (value) => setState(() => searchQuery = value),
-              decoration: InputDecoration(
-                hintText: 'Search for articles...',
-                hintStyle: TextStyle(color: Colors.grey[600]),
-                prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              ),
-            ),
           ),
-          const SizedBox(height: 24),
           
           // Explore Guides Section
-          Text(
-            'Explore Guides',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
-                ),
+          Container(
+            width: double.infinity,
+            child: Text(
+              'Explore Guides',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: accentColor,
+                    letterSpacing: 0.3,
+                  ),
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,
@@ -217,7 +213,13 @@ class _ResourcesPageState extends ConsumerState<ResourcesPage> {
                 title: 'Daily Tips',
                 icon: Icons.lightbulb_outline,
                 color: Colors.green,
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DailyTipsPage())),
+                onTap: () {
+                  if (ref.read(userProfileProvider) == UserProfileType.toddlerParent) {
+                     Navigator.push(context, MaterialPageRoute(builder: (_) => const ParentingWisdomPage()));
+                  } else {
+                     Navigator.push(context, MaterialPageRoute(builder: (_) => const DailyTipsPage()));
+                  }
+                },
               ),
               _CategoryCard(
                 title: 'Labour Prep',
@@ -226,6 +228,32 @@ class _ResourcesPageState extends ConsumerState<ResourcesPage> {
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HospitalBagPage())),
               ),
             ],
+          ),
+          const SizedBox(height: 24),
+
+          // Search Bar
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.7),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: TextField(
+              onChanged: (value) => setState(() => searchQuery = value),
+              decoration: InputDecoration(
+                hintText: 'Search for articles...',
+                hintStyle: TextStyle(color: Colors.grey[600]),
+                prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              ),
+            ),
           ),
           const SizedBox(height: 24),
 

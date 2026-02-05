@@ -13,6 +13,9 @@ import 'package:maternal_infant_care/data/models/contraction_model.dart';
 import 'package:maternal_infant_care/data/models/milestone_model.dart';
 import 'package:maternal_infant_care/data/models/chat_message_model.dart';
 import 'package:maternal_infant_care/data/models/chat_session_model.dart';
+import 'package:maternal_infant_care/data/models/iot_device_model.dart';
+import 'package:maternal_infant_care/data/models/iot_alert_model.dart';
+import 'package:maternal_infant_care/data/models/iot_reading_model.dart';
 
 class HiveAdapters {
   static Future<void> registerAdapters() async {
@@ -57,6 +60,15 @@ class HiveAdapters {
     }
     if (!Hive.isAdapterRegistered(31)) {
        Hive.registerAdapter(ChatSessionModelAdapter());
+    }
+    if (!Hive.isAdapterRegistered(40)) {
+       Hive.registerAdapter(IoTDeviceModelAdapter());
+    }
+    if (!Hive.isAdapterRegistered(41)) {
+       Hive.registerAdapter(IoTAlertModelAdapter());
+    }
+    if (!Hive.isAdapterRegistered(42)) {
+       Hive.registerAdapter(IoTReadingModelAdapter());
     }
   }
 }

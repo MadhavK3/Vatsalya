@@ -6,6 +6,7 @@ import 'package:maternal_infant_care/presentation/pages/auth_page.dart';
 import 'package:maternal_infant_care/presentation/pages/onboarding_page.dart';
 import 'package:maternal_infant_care/presentation/pages/settings_page.dart';
 import 'package:maternal_infant_care/presentation/viewmodels/user_meta_provider.dart';
+import 'package:maternal_infant_care/presentation/widgets/translatable_text.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -23,7 +24,7 @@ class ProfilePage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Profile'),
+        title: 'My Profile'.tr(),
         centerTitle: true,
         elevation: 0,
       ),
@@ -79,8 +80,7 @@ class ProfilePage extends ConsumerWidget {
                 color: Theme.of(context).colorScheme.secondaryContainer,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Text(
-                profileType == UserProfileType.pregnant ? 'Expecting Mother' : 'Toddler Parent',
+              child: (profileType == UserProfileType.pregnant ? 'Expecting Mother' : 'Toddler Parent').tr(
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSecondaryContainer,
                   fontWeight: FontWeight.bold,
@@ -105,8 +105,8 @@ class ProfilePage extends ConsumerWidget {
                 children: [
                   ListTile(
                     leading: const Icon(Icons.settings_outlined),
-                    title: const Text('Settings'),
-                    subtitle: const Text('Account, Journey & Notifications'),
+                    title: 'Settings'.tr(),
+                    subtitle: 'Account, Journey & Notifications'.tr(),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage()));
@@ -133,20 +133,20 @@ class ProfilePage extends ConsumerWidget {
                 children: [
                   ListTile(
                     leading: const Icon(Icons.info_outline),
-                    title: const Text('Version'),
+                    title: 'Version'.tr(),
                     trailing: const Text('1.0.0'),
                   ),
                   const Divider(height: 1, indent: 16, endIndent: 16),
                   ListTile(
                     leading: const Icon(Icons.shield_outlined),
-                    title: const Text('Privacy Policy'),
+                    title: 'Privacy Policy'.tr(),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                     onTap: () {},
                   ),
                   const Divider(height: 1, indent: 16, endIndent: 16),
                    ListTile(
                     leading: const Icon(Icons.description_outlined),
-                    title: const Text('Terms of Service'),
+                    title: 'Terms of Service'.tr(),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                     onTap: () {},
                   ),
@@ -174,7 +174,7 @@ class ProfilePage extends ConsumerWidget {
                    side: const BorderSide(color: Colors.red),
                  ),
                  icon: const Icon(Icons.logout),
-                 label: const Text('Log Out'),
+                 label: 'Log Out'.tr(),
                ),
              ),
              const SizedBox(height: 24),
@@ -187,8 +187,7 @@ class ProfilePage extends ConsumerWidget {
   Widget _buildSectionHeader(BuildContext context, String title) {
     return Align(
       alignment: Alignment.centerLeft,
-      child: Text(
-        title,
+      child: title.tr(
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
           fontWeight: FontWeight.bold,
           color: Theme.of(context).colorScheme.primary,

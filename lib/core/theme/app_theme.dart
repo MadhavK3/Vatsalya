@@ -52,10 +52,9 @@ class AppTheme {
       secondary: secondaryColor,
       onSecondary: Colors.black,
       tertiary: accentColor,
-      background: isDark ? parchmentDark : parchmentLight,
+
       surface: isDark ? const Color(0xFF4E342E) : const Color(0xFFFFF8E1), // Slightly lighter/darker surface
       onSurface: isDark ? textLight : textDark,
-      onBackground: isDark ? textLight : textDark,
     );
 
     // Typography - Ancient Style
@@ -110,7 +109,7 @@ class AppTheme {
       ),
       bodySmall: GoogleFonts.crimsonText(
         fontSize: 14,
-        color: isDark ? textLight.withOpacity(0.8) : textDark.withOpacity(0.8)
+        color: isDark ? textLight.withValues(alpha: 0.8) : textDark.withValues(alpha: 0.8)
       ),
       labelLarge: GoogleFonts.cinzel(
         fontSize: 14, fontWeight: FontWeight.bold,
@@ -143,11 +142,11 @@ class AppTheme {
       // Ornate Cards
       cardTheme: CardThemeData(
         elevation: 4,
-        shadowColor: Colors.black.withOpacity(0.3),
+        shadowColor: Colors.black.withValues(alpha: 0.3),
         shape: BeveledRectangleBorder(
           borderRadius: BorderRadius.circular(12),
           side: BorderSide(
-            color: secondaryColor.withOpacity(0.5), 
+            color: secondaryColor.withValues(alpha: 0.5), 
             width: 1
           ),
         ),
@@ -191,19 +190,19 @@ class AppTheme {
       // Scroll-like Inputs
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: isDark ? Colors.black.withOpacity(0.2) : Colors.white.withOpacity(0.4),
+        fillColor: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.4),
         border: UnderlineInputBorder(
           borderSide: const BorderSide(color: primaryColor),
           borderRadius: BorderRadius.circular(4),
         ),
         enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: primaryColor.withOpacity(0.5)),
+          borderSide: BorderSide(color: primaryColor.withValues(alpha: 0.5)),
         ),
         focusedBorder: UnderlineInputBorder(
           borderSide: const BorderSide(color: secondaryColor, width: 2),
         ),
         labelStyle: TextStyle(
-          color: isDark ? textLight.withOpacity(0.7) : textDark.withOpacity(0.7),
+          color: isDark ? textLight.withValues(alpha: 0.7) : textDark.withValues(alpha: 0.7),
           fontFamily: GoogleFonts.crimsonText().fontFamily,
           fontSize: 18,
         ),
@@ -218,19 +217,19 @@ class AppTheme {
       // Golden Navigation Bar
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: isDark ? const Color(0xFF2D1B0E) : const Color(0xFFF5E6C9),
-        indicatorColor: secondaryColor.withOpacity(0.4),
-        labelTextStyle: MaterialStateProperty.all(
+        indicatorColor: secondaryColor.withValues(alpha: 0.4),
+        labelTextStyle: WidgetStateProperty.all(
           GoogleFonts.cinzel(
             fontSize: 12, 
             fontWeight: FontWeight.w600,
             color: isDark ? textLight : textDark,
           ),
         ),
-        iconTheme: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return const IconThemeData(color: primaryColor);
           }
-          return IconThemeData(color: isDark ? textLight.withOpacity(0.7) : textDark.withOpacity(0.7));
+          return IconThemeData(color: isDark ? textLight.withValues(alpha: 0.7) : textDark.withValues(alpha: 0.7));
         }),
       ),
     );

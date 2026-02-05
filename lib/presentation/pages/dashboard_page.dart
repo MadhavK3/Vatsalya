@@ -23,6 +23,7 @@ import 'package:maternal_infant_care/presentation/pages/diaper_tracking_page.dar
 import 'package:maternal_infant_care/presentation/pages/diaper_tracking_page.dart';
 import 'package:maternal_infant_care/presentation/widgets/manuscript_dialog.dart';
 import 'package:maternal_infant_care/presentation/pages/careflow_ai_page.dart';
+import 'package:maternal_infant_care/presentation/widgets/translatable_text.dart';
 
 import 'package:maternal_infant_care/presentation/pages/profile_page.dart';
 import 'package:maternal_infant_care/presentation/pages/pregnancy_setup_page.dart';
@@ -81,7 +82,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                         color: Theme.of(context).colorScheme.primary,
                       ),
                 ),
-                Text(
+                TText(
                   'How is your journey today?',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -92,22 +93,22 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               _buildGreetingCard(context, pregnancyRepo),
               const SizedBox(height: 32),
               
-              _buildSectionHeader(context, 'Daily Tracker Hub', 'Monitor your baby\'s essentials'),
+              _buildSectionHeader(context, 'Daily Tracker Hub', 'Monitor your baby\'s essentials', true),
               const SizedBox(height: 16),
               _buildTrackingGrid(context, feedingRepo, sleepRepo, diaperRepo),
               
               const SizedBox(height: 32),
-              _buildSectionHeader(context, 'Health & Security', 'Medical milestones & protection'),
+              _buildSectionHeader(context, 'Health & Security', 'Medical milestones & protection', true),
               const SizedBox(height: 16),
               _buildHealthSection(context),
               
               const SizedBox(height: 32),
-              _buildSectionHeader(context, 'Wisdom Center', 'Expert guidance & awareness'),
+              _buildSectionHeader(context, 'Wisdom Center', 'Expert guidance & awareness', true),
               const SizedBox(height: 16),
               _buildWisdomHub(context),
               
               const SizedBox(height: 32),
-              _buildSectionHeader(context, 'Growth & Stats', 'Visualize progress over time'),
+              _buildSectionHeader(context, 'Growth & Stats', 'Visualize progress over time', true),
               const SizedBox(height: 16),
               _ActionTile(
                 title: 'Weekly Insights',
@@ -283,24 +284,39 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     );
   }
 
-  Widget _buildSectionHeader(BuildContext context, String title, String subtitle) {
+  Widget _buildSectionHeader(BuildContext context, String title, String subtitle, [bool translate = false]) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-        ),
+        translate 
+          ? TText(
+              title,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+            )
+          : Text(
+              title,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+            ),
         const SizedBox(height: 4),
-        Text(
-          subtitle,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-        ),
+        translate
+          ? TText(
+              subtitle,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+            )
+          : Text(
+              subtitle,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+            ),
       ],
     );
   }

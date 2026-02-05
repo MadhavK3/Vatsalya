@@ -21,5 +21,17 @@ final smartRemindersProvider = FutureProvider<List<ReminderModel>>((ref) async {
     vaccRepo: vaccRepo,
   );
 
-  return engine.generateReminders(userProfile);
+  final generated = await engine.generateReminders(userProfile);
+
+  // Filter out reminders that already exist (active or completed)
+  try {
+    final reminderRepo = await ref.watch(reminderRepositoryProvider.future);
+    final existingReminders = reminderRepo.getAllReminders();
+    final existingIds = existingReminders.map((r) => r.id).toSet();
+    
+    return generated.where((r) => !existingIds.contains(r.id)).toList();
+  } catch (e) {
+    // Fallback if repo not available
+    return generated;
+  }
 });

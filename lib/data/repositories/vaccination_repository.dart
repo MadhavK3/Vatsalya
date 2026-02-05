@@ -18,9 +18,15 @@ class VaccinationRepository {
   }
 
   List<VaccinationModel> getUpcomingVaccinations() {
-    final now = DateTime.now();
+    // Normalize to start of today to include vaccinations due today
+    final today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
     return _box.values
-        .where((v) => !v.isCompleted && v.scheduledDate.isAfter(now))
+        .where((v) {
+          if (v.isCompleted) return false;
+          // Normalize scheduled date to compare just the date part
+          final scheduledDay = DateTime(v.scheduledDate.year, v.scheduledDate.month, v.scheduledDate.day);
+          return !scheduledDay.isBefore(today); // Include today and future
+        })
         .toList()
       ..sort((a, b) => a.scheduledDate.compareTo(b.scheduledDate));
   }
@@ -31,13 +37,14 @@ class VaccinationRepository {
   }
 
   List<VaccinationModel> getVaccinationsDueSoon({int daysAhead = 7}) {
-    final now = DateTime.now();
-    final limit = now.add(Duration(days: daysAhead));
+    final today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    final limit = today.add(Duration(days: daysAhead));
     return _box.values
-        .where((v) =>
-            !v.isCompleted &&
-            v.scheduledDate.isAfter(now) &&
-            v.scheduledDate.isBefore(limit))
+        .where((v) {
+          if (v.isCompleted) return false;
+          final scheduledDay = DateTime(v.scheduledDate.year, v.scheduledDate.month, v.scheduledDate.day);
+          return !scheduledDay.isBefore(today) && scheduledDay.isBefore(limit);
+        })
         .toList()
       ..sort((a, b) => a.scheduledDate.compareTo(b.scheduledDate));
   }

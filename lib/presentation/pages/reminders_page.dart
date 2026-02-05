@@ -80,21 +80,40 @@ class _RemindersPageState extends ConsumerState<RemindersPage> {
                              final reminder = smartList[index];
                              return Padding(
                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                               child: SmartReminderCard(
+                                 child: SmartReminderCard(
                                  reminder: reminder,
-                                 onDismiss: () {
-                                   // In a real app, we'd blacklist this ID in a persistent store
-                                   // For now, we unfortunately can't modify the provider's state easily without a notifier
-                                   // Or we save it as "completed" to local repo immediately?
-                                   // Let's just visually remove by saving it as completed/dismissed to local repo
-                                   // so it doesn't show up again? Or separate blacklist.
-                                   // Creating a manual entry marked as completed/ignored is a safe bet.
+                                 actionLabel: 'Add',
+                                 actionIcon: Icons.add,
+                                 onDismiss: () async {
+                                   print('🔔 DEBUG: Dismiss button pressed for reminder: ${reminder.id}');
+                                   // Mark as completed/ignored so it doesn't show up again
+                                   final ignored = reminder.copyWith(isCompleted: true);
+                                   await repo.saveReminder(ignored);
+                                   print('🔔 DEBUG: Reminder saved as dismissed');
+                                   ref.invalidate(smartRemindersProvider);
+                                   ref.invalidate(reminderRepositoryProvider);
+                                   if (context.mounted) {
+                                     ScaffoldMessenger.of(context).showSnackBar(
+                                       const SnackBar(content: Text('Reminder dismissed')),
+                                     );
+                                   }
                                  },
                                  onComplete: () async {
-                                    // Save to local repo as done
-                                    final completed = reminder.copyWith(isCompleted: true);
-                                    await repo.saveReminder(completed);
-                                    // Refresh logic might be needed
+                                    print('🔔 DEBUG: Add button pressed for reminder: ${reminder.id}');
+                                    // Save to local repo as ACTIVE (not completed)
+                                    final active = reminder.copyWith(isCompleted: false);
+                                    await repo.saveReminder(active);
+                                    print('🔔 DEBUG: Reminder saved as active');
+                                    
+                                    // Refresh lists
+                                    ref.invalidate(smartRemindersProvider);
+                                    ref.invalidate(reminderRepositoryProvider);
+                                    
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Reminder added to schedule')),
+                                      );
+                                    }
                                  },
                                ),
                              );

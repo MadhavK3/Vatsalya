@@ -189,6 +189,9 @@ class _ScheduleTab extends ConsumerWidget {
                   );
                   await repo.saveVaccination(vaccination);
                   await ReminderService.scheduleVaccinationReminder(vaccination);
+                  
+                  // Refresh the provider to update the UI
+                  ref.invalidate(vaccinationRepositoryProvider);
 
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -213,23 +216,25 @@ class _ScheduleTab extends ConsumerWidget {
 
   int _parseAgeToDays(String age) {
     if (age.contains('At birth')) return 0;
+    
+    // Extract the first number from the age string (handles ranges like "16-18 months")
+    final numberMatch = RegExp(r'(\d+)').firstMatch(age);
+    final firstNumber = numberMatch != null ? int.tryParse(numberMatch.group(1)!) ?? 0 : 0;
+    
     if (age.contains('weeks')) {
-      final weeks = int.tryParse(age.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
-      return weeks * 7;
+      return firstNumber * 7;
     }
     if (age.contains('months')) {
-      final months = int.tryParse(age.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
-      return months * 30;
+      return firstNumber * 30;
     }
     if (age.contains('year')) {
-      final years = int.tryParse(age.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
-      return years * 365;
+      return firstNumber * 365;
     }
     return 0;
   }
 }
 
-class _VaccinationCard extends StatelessWidget {
+class _VaccinationCard extends ConsumerWidget {
   final VaccinationModel vaccination;
   final dynamic repo;
   final bool isUpcoming;
@@ -241,7 +246,7 @@ class _VaccinationCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       color: isUpcoming && vaccination.daysUntilDue <= 7
@@ -290,6 +295,14 @@ class _VaccinationCard extends StatelessWidget {
                     administeredDate: DateTime.now(),
                   );
                   await repo.saveVaccination(updated);
+                  // Refresh the provider to update the UI
+                  ref.invalidate(vaccinationRepositoryProvider);
+                  
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Vaccination marked as completed')),
+                    );
+                  }
                 },
               )
             : null,
