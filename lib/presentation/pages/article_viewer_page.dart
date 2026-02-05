@@ -9,10 +9,8 @@ class ArticleViewerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
+      backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: [
           SliverAppBar.large(
@@ -38,7 +36,7 @@ class ArticleViewerPage extends StatelessWidget {
                     colors: [
                       article.color,
                       article.color.withOpacity(0.6),
-                      isDark ? const Color(0xFF0F172A) : Colors.white,
+                      Colors.white,
                     ],
                     stops: const [0.0, 0.7, 1.0],
                   ),
@@ -61,9 +59,9 @@ class ArticleViewerPage extends StatelessWidget {
           ),
           SliverToBoxAdapter(
             child: Container(
-              decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
               ),
               transform: Matrix4.translationValues(0, -20, 0),
               child: Padding(
@@ -107,7 +105,7 @@ class ArticleViewerPage extends StatelessWidget {
                         p: TextStyle(
                             fontSize: 16, 
                             height: 1.6, 
-                            color: isDark ? Colors.grey[300] : Colors.grey[800],
+                            color: Colors.grey[800],
                             fontFamily: 'Roboto', // Or default
                         ),
                         h1: TextStyle(
@@ -116,19 +114,19 @@ class ArticleViewerPage extends StatelessWidget {
                             color: article.color,
                             height: 1.5,
                         ),
-                        h2: TextStyle(
+                        h2: const TextStyle(
                             fontSize: 22, 
                             fontWeight: FontWeight.w600, 
-                            color: isDark ? Colors.white : Colors.black87,
+                            color: Colors.black87,
                             height: 1.5,
                         ),
                         listBullet: TextStyle(
                             color: article.color,
                             fontSize: 16,
                         ),
-                        strong: TextStyle(
+                        strong: const TextStyle(
                            fontWeight: FontWeight.bold,
-                           color: isDark ? Colors.white : Colors.black,
+                           color: Colors.black,
                         ),
                         blockSpacing: 16,
                       ),

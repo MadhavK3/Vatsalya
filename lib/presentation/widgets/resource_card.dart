@@ -9,14 +9,12 @@ class ResourceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        color: isDark ? const Color(0xFF1E293B) : Colors.white.withOpacity(0.6),
+        color: Colors.white.withOpacity(0.6),
         border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.8),
+          color: Colors.white.withOpacity(0.8),
           width: 1.5,
         ),
         boxShadow: [
@@ -59,7 +57,7 @@ class ResourceCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF0F172A) : Colors.white.withOpacity(0.8),
+                          color: Colors.white.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: article.color.withOpacity(0.3),
@@ -81,10 +79,10 @@ class ResourceCard extends StatelessWidget {
                 const SizedBox(height: 16), // Replaced Spacer to avoid unbound height issues
                 Text(
                   article.title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : const Color(0xFF2D3142),
+                    color: Color(0xFF2D3142),
                     height: 1.2,
                   ),
                   maxLines: 2,
@@ -95,7 +93,7 @@ class ResourceCard extends StatelessWidget {
                   article.description,
                   style: TextStyle(
                     fontSize: 12,
-                    color: isDark ? Colors.grey[400] : Colors.grey[700],
+                    color: Colors.grey[700],
                     height: 1.4,
                   ),
                   maxLines: 2,
@@ -107,7 +105,7 @@ class ResourceCard extends StatelessWidget {
                     Icon(
                       Icons.access_time_rounded,
                       size: 14,
-                      color: isDark ? Colors.grey[400] : Colors.grey[500],
+                      color: Colors.grey[500],
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -115,7 +113,7 @@ class ResourceCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
-                        color: isDark ? Colors.grey[400] : Colors.grey[500],
+                        color: Colors.grey[500],
                       ),
                     ),
                   ],

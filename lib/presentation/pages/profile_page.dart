@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:maternal_infant_care/core/theme/app_theme.dart';
 import 'package:maternal_infant_care/presentation/viewmodels/auth_provider.dart';
 import 'package:maternal_infant_care/presentation/viewmodels/user_provider.dart';
 import 'package:maternal_infant_care/presentation/pages/auth_page.dart';
@@ -15,7 +14,6 @@ class ProfilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
     final profileType = ref.watch(userProfileProvider);
-    final themeMode = ref.watch(themeModeProvider);
     final userMeta = ref.watch(userMetaProvider);
     
     final displayName = (userMeta.username != null && userMeta.username!.isNotEmpty) 
@@ -105,19 +103,6 @@ class ProfilePage extends ConsumerWidget {
               ),
               child: Column(
                 children: [
-                   SwitchListTile(
-                    title: const Text('Dark Mode'),
-                    subtitle: const Text('Adjust app appearance'),
-                    secondary: Icon(
-                      themeMode == ThemeMode.dark ? Icons.dark_mode : Icons.light_mode,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    value: themeMode == ThemeMode.dark,
-                    onChanged: (value) {
-                      ref.read(themeModeProvider.notifier).toggleTheme();
-                    },
-                  ),
-                  const Divider(height: 1, indent: 16, endIndent: 16),
                   ListTile(
                     leading: const Icon(Icons.settings_outlined),
                     title: const Text('Settings'),

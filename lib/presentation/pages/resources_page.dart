@@ -44,8 +44,6 @@ class _ResourcesPageState extends ConsumerState<ResourcesPage> {
       return matchesSearch && matchesCategory;
     }).toList();
 
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -53,10 +51,10 @@ class _ResourcesPageState extends ConsumerState<ResourcesPage> {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: isDarkMode ? Colors.white : const Color(0xFF4A4A4A),
-        systemOverlayStyle: SystemUiOverlayStyle(
+        foregroundColor: const Color(0xFF4A4A4A),
+        systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          statusBarIconBrightness: isDarkMode ? Brightness.light : Brightness.dark,
+          statusBarIconBrightness: Brightness.dark,
         ),
       ),
       body: Stack(
@@ -140,8 +138,7 @@ class _ResourcesPageState extends ConsumerState<ResourcesPage> {
   }
 
   Widget _buildSearchAndFilters(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : const Color(0xFF2D3142);
+    const textColor = Color(0xFF2D3142);
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -163,7 +160,7 @@ class _ResourcesPageState extends ConsumerState<ResourcesPage> {
           // Search Bar
           Container(
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E293B) : Colors.white.withOpacity(0.7),
+              color: Colors.white.withOpacity(0.7),
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -177,8 +174,8 @@ class _ResourcesPageState extends ConsumerState<ResourcesPage> {
               onChanged: (value) => setState(() => searchQuery = value),
               decoration: InputDecoration(
                 hintText: 'Search for articles...',
-                hintStyle: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
-                prefixIcon: Icon(Icons.search, color: isDark ? Colors.grey[400] : Colors.grey[600]),
+                hintStyle: TextStyle(color: Colors.grey[600]),
+                prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
@@ -254,13 +251,13 @@ class _ResourcesPageState extends ConsumerState<ResourcesPage> {
                     onSelected: (selected) {
                       setState(() => selectedCategory = category);
                     },
-                    backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white.withOpacity(0.5),
-                    selectedColor: isDark ? const Color(0xFF4A148C) : const Color(0xFFE1BEE7),
+                    backgroundColor: Colors.white.withOpacity(0.5),
+                    selectedColor: const Color(0xFFE1BEE7),
                     showCheckmark: false,
                     labelStyle: TextStyle(
                       color: isSelected 
-                        ? (isDark ? Colors.white : const Color(0xFF4A148C))
-                        : (isDark ? Colors.white70 : const Color(0xFF455A64)),
+                        ? const Color(0xFF4A148C)
+                        : const Color(0xFF455A64),
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                     ),
                     shape: RoundedRectangleBorder(
@@ -268,7 +265,7 @@ class _ResourcesPageState extends ConsumerState<ResourcesPage> {
                       side: BorderSide(
                         color: isSelected 
                           ? Colors.transparent 
-                          : (isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.8)),
+                          : Colors.white.withOpacity(0.8),
                         width: 1,
                       ),
                     ),
@@ -285,7 +282,6 @@ class _ResourcesPageState extends ConsumerState<ResourcesPage> {
 
 
   Widget _buildEmptyState(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -293,14 +289,14 @@ class _ResourcesPageState extends ConsumerState<ResourcesPage> {
           Icon(
             Icons.search_off_rounded,
             size: 64,
-            color: isDark ? Colors.grey[600] : Colors.grey.withOpacity(0.5),
+            color: Colors.grey.withOpacity(0.5),
           ),
           const SizedBox(height: 16),
           Text(
             'No resources found',
             style: TextStyle(
               fontSize: 18,
-              color: isDark ? Colors.grey[400] : Colors.grey[700],
+              color: Colors.grey[700],
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -614,15 +610,13 @@ class _CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
     return Card(
       elevation: 0,
-      color: isDark ? const Color(0xFF1E293B) : Colors.white.withOpacity(0.6),
+      color: Colors.white.withOpacity(0.6),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(
-          color: isDark ? Colors.white.withOpacity(0.1) : Colors.white.withOpacity(0.5)
+          color: Colors.white.withOpacity(0.5)
         ),
       ),
       child: InkWell(
@@ -642,9 +636,9 @@ class _CategoryCard extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               title, 
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.bold, 
-                color: isDark ? Colors.white : const Color(0xFF2D3142)
+                color: Color(0xFF2D3142)
               )
             ),
           ],

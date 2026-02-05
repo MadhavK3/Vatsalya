@@ -66,19 +66,16 @@ void main() async {
   );
 }
 
-class VatsalyaApp extends ConsumerWidget {
+class VatsalyaApp extends StatelessWidget {
   const VatsalyaApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeModeProvider);
-    
+  Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Vatsalya',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: themeMode,
+      themeMode: ThemeMode.light,
       home: const SplashPage(),
     );
   }
